@@ -3,6 +3,7 @@ from keras.models import Model
 from keras.optimizers import SGD
 from keras.regularizers import l2
 
+from api.src.models.localization_network import create_localization_net, get_spatial_transformer
 from api.src.common.config import Config
 
 import logging
@@ -106,7 +107,7 @@ def _layer(block, n_input_plane, n_output_plane, count, stride):
     return f
 
 
-def create_model():
+def create_model(spatial_network=None):
     logging.debug("Creating model...")
 
     assert ((depth - 4) % 6 == 0)
@@ -115,13 +116,21 @@ def create_model():
     inputs = Input(shape=Config.INPUT_SHAPE)
 
     n_stages = [16, 16 * k, 32 * k, 64 * k]
+    if spatial_network is not None:
+        conv1 = Conv2D(filters=n_stages[0], kernel_size=(3, 3),
+                       strides=(1, 1),
+                       padding="same",
+                       kernel_initializer=weight_kernel_initializer,
+                       kernel_regularizer=l2(weight_decay),
+                       use_bias=use_bias)(spatial_network(inputs))  # "One conv at the beginning (spatial size: 32x32)"
+    else:
+        conv1 = Conv2D(filters=n_stages[0], kernel_size=(3, 3),
+                       strides=(1, 1),
+                       padding="same",
+                       kernel_initializer=weight_kernel_initializer,
+                       kernel_regularizer=l2(weight_decay),
+                       use_bias=use_bias)(inputs)  # "One conv at the beginning (spatial size: 32x32)"
 
-    conv1 = Conv2D(filters=n_stages[0], kernel_size=(3, 3),
-                   strides=(1, 1),
-                   padding="same",
-                   kernel_initializer=weight_kernel_initializer,
-                   kernel_regularizer=l2(weight_decay),
-                   use_bias=use_bias)(inputs)  # "One conv at the beginning (spatial size: 32x32)"
 
     # Add wide residual blocks
     block_fn = _wide_basic
@@ -146,4 +155,4 @@ def create_model():
 
 
 if __name__ == '__main__':
-    create_model().summary()
+    create_model(get_spatial_transformer()).summary()

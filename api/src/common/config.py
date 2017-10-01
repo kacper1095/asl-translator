@@ -4,8 +4,7 @@ from keras.optimizers import SGD
 
 
 class Config(object):
-
-    IMAGE_SIZE = 32
+    IMAGE_SIZE = 64
     NB_CLASSES = 24
 
     # Keras specific
