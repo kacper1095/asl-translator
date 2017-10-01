@@ -32,3 +32,7 @@ class TrainingConfig(object):
         return 0.0008
 
     sgd = SGD(lr=0.1, momentum=0.9, nesterov=True)
+
+
+class DataConfig(object):
+    pass
