@@ -1,0 +1,17 @@
+papers:
+  - https://arxiv.org/abs/1605.07146 - Wide Resnets
+  - https://arxiv.org/pdf/1506.02025.pdf - Spatial Transformer
+
+code:
+  - https://github.com/asmith26/wide_resnets_keras - Wide Resnets implementation in Keras
+  - https://github.com/oarriaga/spatial_transformer_networks - Spatial Transformer implementation in ekras
+
+datasets:
+  - http://empslocal.ex.ac.uk/people/staff/np331/index.php?section=FingerSpellingDataset - Fingerspelling Dataset
+  - http://www.massey.ac.nz/~albarcza/gesture_dataset2012.html
+
+libraries-documentation:
+  - https://www.tensorflow.org/
+  - https://keras.io/
+  - https://docs.python.org/3/
+  - https://www.geforce.com/hardware/technology/cuda
