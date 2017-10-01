@@ -1,4 +1,5 @@
 import keras.backend as K
+import os
 
 from keras.optimizers import SGD
 
@@ -34,4 +35,7 @@ class TrainingConfig(object):
 
 
 class DataConfig(object):
-    pass
+    PATHS = {
+        'RAW_DATA': os.path.join('data', 'raw'),
+        'PROCESSED_DATA': os.path.join('data', 'processed')
+    }
