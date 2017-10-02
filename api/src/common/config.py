@@ -1,6 +1,6 @@
 import os
 import string
-
+from ..keras_extensions.metrics import f1
 
 
 class Config(object):
@@ -19,8 +19,16 @@ class Config(object):
 
 class TrainingConfig(object):
     from keras.optimizers import SGD
-    nb_epochs = 200
+
+    NB_EPOCHS = 10
+    NUM_WORKERS = 4
+    BATCH_SIZE = 32
+
     lr_schedule = [60, 120, 160]  # epoch_step
+
+    PATHS = {
+        'MODELS': os.path.join('api', 'models')
+    }
 
     @staticmethod
     def schedule(epoch_idx):
@@ -32,8 +40,10 @@ class TrainingConfig(object):
             return 0.004
         return 0.0008
 
-    sgd = SGD(lr=0.1, momentum=0.9, nesterov=True)
-
+    optimizer = SGD(lr=0.1, momentum=0.9, nesterov=True)
+    loss = 'categorical_crossentropy'
+    metrics = ['categorical_accuracy', f1]
+    callbacks_monitor = 'loss'
 
 class DataConfig(object):
     from sklearn.preprocessing import LabelEncoder
@@ -42,7 +52,7 @@ class DataConfig(object):
         'PROCESSED_DATA': os.path.join('data', 'processed')
     }
 
-    AVAILABLE_CHARS = 'abcdefghiklmnopqrstuvwxy' + string.digits
+    AVAILABLE_CHARS = 'abcdefghijklmnopqrstuvwxyz' + string.digits
     CLASS_ENCODER = LabelEncoder()
     CLASS_ENCODER.fit(list(AVAILABLE_CHARS))
 
@@ -59,6 +69,11 @@ class DataConfig(object):
         x = [0.0] * len(DataConfig.AVAILABLE_CHARS)
         x[DataConfig.get_class(sign)[0]] = 1.0
         return x
+
+    @staticmethod
+    def get_number_of_classes():
+        return len(DataConfig.CLASS_ENCODER.classes_)
+
 
 if __name__ == '__main__':
     import pdb

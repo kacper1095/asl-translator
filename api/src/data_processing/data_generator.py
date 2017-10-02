@@ -1,25 +1,17 @@
 import glob
 import cv2
-import time
 import os
+import threading
 import numpy as np
 
-import tensorflow as tf
-
-from .generator_enqueuer import GeneratorEnqueuer
 from ..common import config
 
-tf.app.flags.DEFINE_string('training_data_path', config.DataConfig.PATHS['PROCESSED_DATA'],
-                           'training dataset to use')
 
-FLAGS = tf.app.flags.FLAGS
-
-
-def get_images():
+def get_images(path):
     files = []
     for ext in ['jpg', 'png', 'jpeg', 'JPG']:
         files.extend(glob.glob(
-            os.path.join(FLAGS.training_data_path, '**', '*.{}'.format(ext))))
+            os.path.join(path, '**', '*.{}'.format(ext))))
     return files
 
 
@@ -62,18 +54,19 @@ def crop_area(im, max_tries=50):
     return im
 
 
-def generator(input_size=64, batch_size=32,
+def generator(path,
+              input_size=64,
+              batch_size=32,
               background_ratio=3./8,
               random_scale=np.array([0.5, 1, 2.0, 3.0])):
-    image_list = np.array(get_images())
+    image_list = np.array(get_images(path))
     print('{} training images in {}'.format(
-        image_list.shape[0], FLAGS.training_data_path))
+        image_list.shape[0], path))
     index = np.arange(0, image_list.shape[0])
     while True:
-        np.random.shuffle(index)
         images = []
-        image_fns = []
         classes = []
+        np.random.shuffle(index)
         for i in index:
             try:
                 im_fn = image_list[i]
@@ -113,12 +106,10 @@ def generator(input_size=64, batch_size=32,
                     new_h, new_w, _ = im.shape
 
                 images.append(im[:, :, ::-1].astype(np.float32))
-                image_fns.append(im_fn)
                 classes.append(config.DataConfig.get_one_hot(image_class))
                 if len(images) == batch_size:
-                    yield images, classes
+                    yield np.array(images), np.array(classes)
                     images = []
-                    image_fns = []
                     classes = []
             except Exception as e:
                 import traceback
@@ -126,27 +117,26 @@ def generator(input_size=64, batch_size=32,
                 break
 
 
-def get_batch(num_workers, **kwargs):
-    try:
-        enqueuer = GeneratorEnqueuer(generator(**kwargs), use_multiprocessing=True)
-        enqueuer.start(max_queue_size=24, workers=num_workers)
-        generator_output = None
-        while True:
-            while enqueuer.is_running():
-                if not enqueuer.queue.empty():
-                    generator_output = enqueuer.queue.get()
-                    break
-                else:
-                    time.sleep(0.01)
-            yield generator_output
-            generator_output = None
-    finally:
-        if enqueuer is not None:
-            enqueuer.stop()
+class DataGenerator(object):
+    def __init__(self, dir_path, batch_size, input_size):
+        self.dir_path = dir_path
+        self.batch_size = batch_size
+        self.input_size = input_size
+        self.generator = generator(input_size=input_size, batch_size=batch_size, path=dir_path)
+        self.lock = threading.Lock()
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        with self.lock:
+            return next(self.generator)
+
+    @property
+    def number_of_steps(self):
+        return len(get_images(self.dir_path)) // self.batch_size
 
 
 if __name__ == '__main__':
-    for batch in get_batch(1):
-        import pdb;pdb.set_trace()
-        break
+    pass
 

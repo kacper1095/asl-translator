@@ -4,7 +4,7 @@ from keras.optimizers import SGD
 from keras.regularizers import l2
 
 from api.src.models.localization_network import create_localization_net, get_spatial_transformer
-from api.src.common.config import Config
+from api.src.common.config import Config, DataConfig
 
 import logging
 
@@ -147,7 +147,7 @@ def create_model(spatial_network=None):
     # Classifier block
     pool = AveragePooling2D(pool_size=(8, 8), strides=(1, 1), padding="same")(relu)
     flatten = Flatten()(pool)
-    predictions = Dense(output_dim=Config.NB_CLASSES, kernel_initializer=weight_kernel_initializer, use_bias=use_bias,
+    predictions = Dense(units=DataConfig.get_number_of_classes(), kernel_initializer=weight_kernel_initializer, use_bias=use_bias,
                         kernel_regularizer=l2(weight_decay), activation="softmax")(flatten)
 
     model = Model(inputs=inputs, outputs=predictions)
