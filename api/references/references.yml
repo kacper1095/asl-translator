@@ -1,9 +1,10 @@
 papers:
   - https://arxiv.org/abs/1605.07146 - Wide Resnets
+  - https://arxiv.org/pdf/1512.03385.pdf - Resnets
   - https://arxiv.org/pdf/1506.02025.pdf - Spatial Transformer
   - http://flafla2.github.io/2014/08/09/perlinnoise.html - Perlin Noise
   - http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.10.5032&rep=rep1&type=pdf - Elastic Transformation
-  -
+  - https://arxiv.org/pdf/1502.03167.pdf - Batch Normalization
 
 code:
   - https://github.com/asmith26/wide_resnets_keras - Wide Resnets implementation in Keras
@@ -19,3 +20,4 @@ libraries-documentation:
   - https://keras.io/
   - https://docs.python.org/3/
   - https://www.geforce.com/hardware/technology/cuda
+  - https://www.nginx.com/resources/wiki/

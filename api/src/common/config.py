@@ -1,10 +1,10 @@
-import keras.backend as K
 import os
+import string
 
-from keras.optimizers import SGD
 
 
 class Config(object):
+    import keras.backend as K
     IMAGE_SIZE = 64
     NB_CLASSES = 24
 
@@ -18,6 +18,7 @@ class Config(object):
 
 
 class TrainingConfig(object):
+    from keras.optimizers import SGD
     nb_epochs = 200
     lr_schedule = [60, 120, 160]  # epoch_step
 
@@ -35,7 +36,30 @@ class TrainingConfig(object):
 
 
 class DataConfig(object):
+    from sklearn.preprocessing import LabelEncoder
     PATHS = {
         'RAW_DATA': os.path.join('data', 'raw'),
         'PROCESSED_DATA': os.path.join('data', 'processed')
     }
+
+    AVAILABLE_CHARS = 'abcdefghiklmnopqrstuvwxy' + string.digits
+    CLASS_ENCODER = LabelEncoder()
+    CLASS_ENCODER.fit(list(AVAILABLE_CHARS))
+
+    @staticmethod
+    def get_class(sign):
+        return DataConfig.CLASS_ENCODER.transform([sign])
+
+    @staticmethod
+    def get_classes(signs):
+        return DataConfig.CLASS_ENCODER.transform(signs)
+
+    @staticmethod
+    def get_one_hot(sign):
+        x = [0.0] * len(DataConfig.AVAILABLE_CHARS)
+        x[DataConfig.get_class(sign)[0]] = 1.0
+        return x
+
+if __name__ == '__main__':
+    import pdb
+    pdb.set_trace()
