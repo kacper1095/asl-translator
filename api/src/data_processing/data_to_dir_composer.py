@@ -1,6 +1,7 @@
 import os
 import string
 import shutil
+import glob
 import tqdm
 
 from api.src.common.config import DataConfig
@@ -20,6 +21,8 @@ def parse_empslocal_dataset():
     for volunteer_folder in tqdm.tqdm(os.listdir(empslocal)):
         for letter_folder in os.listdir(os.path.join(empslocal, volunteer_folder)):
             for img_file in os.listdir(os.path.join(empslocal, volunteer_folder, letter_folder)):
+                if img_file.startswith('depth'):
+                    continue
                 src_path = os.path.join(empslocal, volunteer_folder, letter_folder, img_file)
                 dst_folder_path = os.path.join(DataConfig.PATHS['PROCESSED_DATA'], letter_folder.lower())
                 dst_path = os.path.join(dst_folder_path, str(len(os.listdir(dst_folder_path))) + '.png')
@@ -50,7 +53,8 @@ def create_letter_dirs():
 
 def clear_dirs():
     for sign in AVAILABLE_CHARS:
-        shutil.rmtree(os.path.join(DataConfig.PATHS['PROCESSED_DATA', sign, '*']))
+        for file in glob.glob(os.path.join(DataConfig.PATHS['PROCESSED_DATA'], sign, '*')):
+            os.remove(file)
 
 
 def parse_massey_file_name(file_name):

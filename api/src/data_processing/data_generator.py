@@ -58,7 +58,7 @@ def generator(path,
               input_size=64,
               batch_size=32,
               background_ratio=3./8,
-              random_scale=np.array([0.5, 1, 2.0, 3.0])):
+              random_scale=np.array([0.5, 0.75, 1, 1.5, 2.0])):
     image_list = np.array(get_images(path))
     print('{} training images in {}'.format(
         image_list.shape[0], path))
@@ -76,34 +76,39 @@ def generator(path,
                 image_class = get_class_from_path(im_fn)
 
                 rd_scale = np.random.choice(random_scale)
-                im = cv2.resize(im, dsize=None, fx=rd_scale, fy=rd_scale)
-                # print rd_scale
-                # random crop a area from image
-                if np.random.rand() < background_ratio:
-                    # crop background
-                    im = crop_area(im)
-                    # pad and resize image
-                    new_h, new_w, _ = im.shape
-                    max_h_w_i = np.max([new_h, new_w, input_size])
-                    im_padded = np.zeros((max_h_w_i, max_h_w_i, 3), dtype=np.uint8)
-                    im_padded[:new_h, :new_w, :] = im.copy()
-                    im = cv2.resize(im_padded, dsize=(input_size, input_size))
-                else:
-                    im = crop_area(im)
-                    h, w, _ = im.shape
+                # im = cv2.resize(im, dsize=None, fx=rd_scale, fy=rd_scale)
+                # # print rd_scale
+                # # random crop a area from image
+                # if np.random.rand() < background_ratio:
+                #     # crop background
+                #     im = crop_area(im)
+                #     # pad and resize image
+                #     new_h, new_w, _ = im.shape
+                #     max_h_w_i = np.max([new_h, new_w, input_size])
+                #     im_padded = np.zeros((max_h_w_i, max_h_w_i, 3), dtype=np.uint8)
+                #     im_padded[:new_h, :new_w, :] = im.copy()
+                #     im = cv2.resize(im_padded, dsize=(input_size, input_size))
+                # else:
+                #     im = crop_area(im)
+                #     h, w, _ = im.shape
+                #
+                #     # pad the image to the training input size or the longer side of image
+                #     new_h, new_w, _ = im.shape
+                #     max_h_w_i = np.max([new_h, new_w, input_size])
+                #     im_padded = np.zeros((max_h_w_i, max_h_w_i, 3), dtype=np.uint8)
+                #     im_padded[:new_h, :new_w, :] = im.copy()
+                #     im = im_padded
+                #     # resize the image to input size
+                #     new_h, new_w, _ = im.shape
+                #     resize_h = input_size
+                #     resize_w = input_size
+                #     im = cv2.resize(im, dsize=(resize_w, resize_h))
+                #     new_h, new_w, _ = im.shape
 
-                    # pad the image to the training input size or the longer side of image
-                    new_h, new_w, _ = im.shape
-                    max_h_w_i = np.max([new_h, new_w, input_size])
-                    im_padded = np.zeros((max_h_w_i, max_h_w_i, 3), dtype=np.uint8)
-                    im_padded[:new_h, :new_w, :] = im.copy()
-                    im = im_padded
-                    # resize the image to input size
-                    new_h, new_w, _ = im.shape
-                    resize_h = input_size
-                    resize_w = input_size
-                    im = cv2.resize(im, dsize=(resize_w, resize_h))
-                    new_h, new_w, _ = im.shape
+                resize_h = input_size
+                resize_w = input_size
+                im = cv2.resize(im, dsize=(resize_w, resize_h))
+                new_h, new_w, _ = im.shape
 
                 images.append(im[:, :, ::-1].astype(np.float32))
                 classes.append(config.DataConfig.get_one_hot(image_class))
