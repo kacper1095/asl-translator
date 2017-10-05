@@ -25,6 +25,10 @@ def train(num_epochs, batch_size, input_size, num_workers):
         LearningRateScheduler(TrainingConfig.schedule)
     ]
 
+    introduced_change = input("What new was introduced?: ")
+    with open(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'change.txt'), 'w') as f:
+        f.write(introduced_change)
+
     optimizer = TrainingConfig.optimizer
     data_generator_train = DataGenerator(DataConfig.PATHS['TRAINING_PROCESSED_DATA'], batch_size, input_size)
     data_generator_valid = DataGenerator(DataConfig.PATHS['VALID_PROCESSED_DATA'], batch_size, input_size)
