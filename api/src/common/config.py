@@ -45,11 +45,14 @@ class TrainingConfig(object):
     metrics = ['categorical_accuracy', f1]
     callbacks_monitor = 'loss'
 
+
 class DataConfig(object):
     from sklearn.preprocessing import LabelEncoder
     PATHS = {
         'RAW_DATA': os.path.join('data', 'raw'),
-        'PROCESSED_DATA': os.path.join('data', 'processed')
+        'PROCESSED_DATA': os.path.join('data', 'processed'),
+        'TRAINING_PROCESSED_DATA': os.path.join('data', 'processed', 'train'),
+        'VALID_PROCESSED_DATA': os.path.join('data', 'processed', 'valid')
     }
 
     AVAILABLE_CHARS = 'abcdefghijklmnopqrstuvwxyz' + string.digits

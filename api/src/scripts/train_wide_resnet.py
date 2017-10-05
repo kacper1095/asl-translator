@@ -15,8 +15,8 @@ RUNNING_TIME = datetime.datetime.now().strftime("%H_%M_%d_%m_%y")
 
 def train(num_epochs, batch_size, input_size, num_workers):
     ensure_dir(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME))
-    model = create_model(get_spatial_transformer())
-    # model = create_model()
+    # model = create_model(get_spatial_transformer())
+    model = create_model()
 
     callbacks = [
         ModelCheckpoint(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'weights.h5'), save_best_only=True, monitor=TrainingConfig.callbacks_monitor),
@@ -26,11 +26,13 @@ def train(num_epochs, batch_size, input_size, num_workers):
     ]
 
     optimizer = TrainingConfig.optimizer
-    data_generator = DataGenerator(DataConfig.PATHS['PROCESSED_DATA'], batch_size, input_size)
+    data_generator_train = DataGenerator(DataConfig.PATHS['TRAINING_PROCESSED_DATA'], batch_size, input_size)
+    data_generator_valid = DataGenerator(DataConfig.PATHS['VALID_PROCESSED_DATA'], batch_size, input_size)
     model.compile(optimizer, TrainingConfig.loss, metrics=TrainingConfig.metrics)
 
-    model.fit_generator(data_generator, steps_per_epoch=data_generator.number_of_steps, epochs=num_epochs,
-                        callbacks=callbacks, workers=num_workers, max_queue_size=24)
+    model.fit_generator(data_generator_train, steps_per_epoch=data_generator_train.number_of_steps, epochs=num_epochs,
+                        callbacks=callbacks, workers=num_workers, max_queue_size=24,
+                        validation_data=data_generator_valid, validation_steps=data_generator_valid.number_of_steps)
 
 
 def main(args):
