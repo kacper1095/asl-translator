@@ -4,8 +4,12 @@ import os
 import threading
 import numpy as np
 import keras.backend as K
+import random
+
+random.seed(0)
 
 from ..common import config
+from keras.preprocessing.image import flip_axis, random_rotation
 
 
 def get_images(path):
@@ -111,10 +115,12 @@ def generator(path,
                 im = cv2.resize(im, dsize=(resize_w, resize_h))
                 new_h, new_w, _ = im.shape
 
+                im = im[:, :, ::-1].astype(np.float32)
+                im = random_preprocessing(im)
                 if K.backend() == 'tensorflow':
-                    images.append(im[:, :, ::-1].astype(np.float32))
+                    images.append(im)
                 else:
-                    images.append(im[:, :, ::-1].astype(np.float32).transpose((2, 0, 1)))
+                    images.append(im.transpose((2, 0, 1)))
                 classes.append(config.DataConfig.get_one_hot(image_class))
                 if len(images) == batch_size:
                     yield np.array(images) / 255., np.array(classes)
@@ -124,6 +130,14 @@ def generator(path,
                 import traceback
                 traceback.print_exc()
                 break
+
+
+def random_preprocessing(img):
+    if random.random() < 0.5:
+        img = flip_axis(img, 2)
+    if random.random() < 0.5:
+        img = random_rotation(img, random.uniform(-5, 5), 0, 1, 2, fill_mode='wrap')
+    return img
 
 
 class DataGenerator(object):
