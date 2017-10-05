@@ -3,6 +3,7 @@ import cv2
 import os
 import threading
 import numpy as np
+import keras.backend as K
 
 from ..common import config
 
@@ -110,10 +111,13 @@ def generator(path,
                 im = cv2.resize(im, dsize=(resize_w, resize_h))
                 new_h, new_w, _ = im.shape
 
-                images.append(im[:, :, ::-1].astype(np.float32))
+                if K.backend() == 'tensorflow':
+                    images.append(im[:, :, ::-1].astype(np.float32))
+                else:
+                    images.append(im[:, :, ::-1].astype(np.float32).transpose((2, 0, 1)))
                 classes.append(config.DataConfig.get_one_hot(image_class))
                 if len(images) == batch_size:
-                    yield np.array(images), np.array(classes)
+                    yield np.array(images) / 255., np.array(classes)
                     images = []
                     classes = []
             except Exception as e:
@@ -140,6 +144,10 @@ class DataGenerator(object):
     @property
     def number_of_steps(self):
         return len(get_images(self.dir_path)) // self.batch_size
+
+    @property
+    def samples_per_epoch(self):
+        return len(get_images(self.dir_path))
 
 
 if __name__ == '__main__':

@@ -21,7 +21,7 @@ def train(num_epochs, batch_size, input_size, num_workers):
     callbacks = [
         ModelCheckpoint(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'weights.h5'), save_best_only=True, monitor=TrainingConfig.callbacks_monitor),
         CSVLogger(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'history.csv')),
-        TensorBoard(log_dir=os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'tensorboard')),
+        # TensorBoard(log_dir=os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'tensorboard')),
         LearningRateScheduler(TrainingConfig.schedule)
     ]
 
@@ -30,9 +30,9 @@ def train(num_epochs, batch_size, input_size, num_workers):
     data_generator_valid = DataGenerator(DataConfig.PATHS['VALID_PROCESSED_DATA'], batch_size, input_size)
     model.compile(optimizer, TrainingConfig.loss, metrics=TrainingConfig.metrics)
 
-    model.fit_generator(data_generator_train, steps_per_epoch=data_generator_train.number_of_steps, epochs=num_epochs,
-                        callbacks=callbacks, workers=num_workers, max_queue_size=24,
-                        validation_data=data_generator_valid, validation_steps=data_generator_valid.number_of_steps)
+    model.fit_generator(data_generator_train, samples_per_epoch=data_generator_train.samples_per_epoch, nb_epoch=num_epochs,
+                        validation_data=data_generator_valid, nb_val_samples=data_generator_valid.samples_per_epoch,
+                        callbacks=callbacks)
 
 
 def main(args):

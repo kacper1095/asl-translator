@@ -57,4 +57,4 @@ def f1(y_true, y_pred):
         return p
     p = precision(y_true, y_pred)
     r = recall(y_true, y_pred)
-    return 2*((p*r)/(p+r))
+    return 2*((p*r)/(p+r + K.epsilon()))

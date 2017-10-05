@@ -24,7 +24,7 @@ class TrainingConfig(object):
     NUM_WORKERS = 4
     BATCH_SIZE = 32
 
-    lr_schedule = [60, 120, 160]  # epoch_step
+    lr_schedule = [8, 12, 15]  # epoch_step
 
     PATHS = {
         'MODELS': os.path.join('api', 'models')
@@ -33,14 +33,14 @@ class TrainingConfig(object):
     @staticmethod
     def schedule(epoch_idx):
         if (epoch_idx + 1) < TrainingConfig.lr_schedule[0]:
-            return 0.1
+            return 0.01
         elif (epoch_idx + 1) < TrainingConfig.lr_schedule[1]:
-            return 0.02  # lr_decay_ratio = 0.2
+            return 0.005  # lr_decay_ratio = 0.2
         elif (epoch_idx + 1) < TrainingConfig.lr_schedule[2]:
-            return 0.004
-        return 0.0008
+            return 0.0008
+        return 0.0001
 
-    optimizer = SGD(lr=0.1, momentum=0.9, nesterov=True)
+    optimizer = SGD(lr=0.01, momentum=0.9, nesterov=True)
     loss = 'categorical_crossentropy'
     metrics = ['categorical_accuracy', f1]
     callbacks_monitor = 'loss'
