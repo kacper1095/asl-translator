@@ -1,6 +1,6 @@
 import os
 import string
-from ..keras_extensions.metrics import f1
+from api.src.keras_extensions.metrics import f1
 
 
 class Config(object):
@@ -20,9 +20,12 @@ class Config(object):
 class TrainingConfig(object):
     from keras.optimizers import SGD
 
-    NB_EPOCHS = 10
+    NB_EPOCHS = 20
     NUM_WORKERS = 4
     BATCH_SIZE = 32
+    TRAINING_PHASE = 1
+    TESTING_PHASE = 0
+    INITIAL_LEARNING_RATE = 0.005
 
     lr_schedule = [8, 12, 15]  # epoch_step
 
@@ -33,17 +36,23 @@ class TrainingConfig(object):
     @staticmethod
     def schedule(epoch_idx):
         if (epoch_idx + 1) < TrainingConfig.lr_schedule[0]:
-            return 0.01
+            return TrainingConfig.INITIAL_LEARNING_RATE
         elif (epoch_idx + 1) < TrainingConfig.lr_schedule[1]:
-            return 0.005  # lr_decay_ratio = 0.2
+            return 0.001  # lr_decay_ratio = 0.2
         elif (epoch_idx + 1) < TrainingConfig.lr_schedule[2]:
-            return 0.0008
+            return 0.0005
         return 0.0001
 
-    optimizer = SGD(lr=0.01, momentum=0.9, nesterov=True)
+    optimizer = SGD(lr=INITIAL_LEARNING_RATE, decay=1e-6, momentum=0.9, nesterov=True)
     loss = 'categorical_crossentropy'
     metrics = ['categorical_accuracy', f1]
     callbacks_monitor = 'loss'
+
+    @staticmethod
+    def get_config():
+        return {
+
+        }
 
 
 class DataConfig(object):
@@ -78,6 +87,3 @@ class DataConfig(object):
         return len(DataConfig.CLASS_ENCODER.classes_)
 
 
-if __name__ == '__main__':
-    import pdb
-    pdb.set_trace()

@@ -1,6 +1,7 @@
 import os
 import argparse
 import datetime
+import yaml
 import api.src.common.initial_environment_config
 
 from ..models.wide_resnet import create_model, get_spatial_transformer
@@ -29,9 +30,12 @@ def train(num_epochs, batch_size, input_size, num_workers):
     with open(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'change.txt'), 'w') as f:
         f.write(introduced_change)
 
+    with open(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'config.yml'), 'w') as f:
+        yaml.dump([TrainingConfig.__dict__, Config.__dict__, DataConfig.__dict__], f, default_flow_style=False)
+
     optimizer = TrainingConfig.optimizer
-    data_generator_train = DataGenerator(DataConfig.PATHS['TRAINING_PROCESSED_DATA'], batch_size, input_size)
-    data_generator_valid = DataGenerator(DataConfig.PATHS['VALID_PROCESSED_DATA'], batch_size, input_size)
+    data_generator_train = DataGenerator(DataConfig.PATHS['TRAINING_PROCESSED_DATA'], batch_size, input_size, True)
+    data_generator_valid = DataGenerator(DataConfig.PATHS['VALID_PROCESSED_DATA'], batch_size, input_size, False)
     model.compile(optimizer, TrainingConfig.loss, metrics=TrainingConfig.metrics)
 
     model.fit_generator(data_generator_train, samples_per_epoch=data_generator_train.samples_per_epoch, nb_epoch=num_epochs,

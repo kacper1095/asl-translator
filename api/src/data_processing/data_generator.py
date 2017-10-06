@@ -11,7 +11,6 @@ random.seed(0)
 from ..common import config
 from keras.preprocessing.image import flip_axis, random_rotation
 
-
 def get_images(path):
     files = []
     for ext in ['jpg', 'png', 'jpeg', 'JPG']:
@@ -62,8 +61,8 @@ def crop_area(im, max_tries=50):
 def generator(path,
               input_size=64,
               batch_size=32,
-              background_ratio=3./8,
-              random_scale=np.array([0.5, 0.75, 1, 1.5, 2.0])):
+              random_scale=np.array([0.5, 0.75, 1, 1.5, 2.0]),
+              phase=1):
     image_list = np.array(get_images(path))
     print('{} training images in {}'.format(
         image_list.shape[0], path))
@@ -116,7 +115,8 @@ def generator(path,
                 new_h, new_w, _ = im.shape
 
                 im = im[:, :, ::-1].astype(np.float32)
-                im = random_preprocessing(im)
+                if phase == config.TrainingConfig.TRAINING_PHASE:
+                    im = random_preprocessing(im)
                 if K.backend() == 'tensorflow':
                     images.append(im)
                 else:
@@ -141,11 +141,12 @@ def random_preprocessing(img):
 
 
 class DataGenerator(object):
-    def __init__(self, dir_path, batch_size, input_size):
+    def __init__(self, dir_path, batch_size, input_size, valid):
         self.dir_path = dir_path
         self.batch_size = batch_size
         self.input_size = input_size
-        self.generator = generator(input_size=input_size, batch_size=batch_size, path=dir_path)
+        self.training_phase = config.TrainingConfig.TESTING_PHASE if valid else config.TrainingConfig.TRAINING_PHASE
+        self.generator = generator(input_size=input_size, batch_size=batch_size, path=dir_path, phase=self.training_phase)
         self.lock = threading.Lock()
 
     def __iter__(self):
