@@ -4,19 +4,27 @@ import datetime
 import yaml
 import api.src.common.initial_environment_config
 
-from ..models.svm import SvmClassifier
+from ..models.svm import create_model
 from ..data_processing.data_generator import DataGenerator
 from ..common.config import TrainingConfig, DataConfig, Config
 from ..common.utils import print_info, ensure_dir
 
+from keras.callbacks import ModelCheckpoint, CSVLogger, TensorBoard, LearningRateScheduler, EarlyStopping
 
 RUNNING_TIME = datetime.datetime.now().strftime("%H_%M_%d_%m_%y")
 
 
 def train(num_epochs, batch_size, input_size, num_workers):
     ensure_dir(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME))
-    # model = create_model(get_spatial_transformer())
-    model = SvmClassifier()
+    model = create_model(512)
+
+    callbacks = [
+        ModelCheckpoint(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'weights.h5'), save_best_only=True, monitor=TrainingConfig.callbacks_monitor),
+        CSVLogger(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'history.csv')),
+        # TensorBoard(log_dir=os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'tensorboard')),
+        LearningRateScheduler(TrainingConfig.schedule),
+        EarlyStopping(patience=5)
+    ]
 
     introduced_change = input("What new was introduced?: ")
     with open(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'change.txt'), 'w') as f:
@@ -26,12 +34,13 @@ def train(num_epochs, batch_size, input_size, num_workers):
         yaml.dump([TrainingConfig.__dict__, Config.__dict__, DataConfig.__dict__], f, default_flow_style=False)
 
     optimizer = TrainingConfig.optimizer
-    data_generator_train = DataGenerator(DataConfig.PATHS['TRAINING_PROCESSED_DATA'], batch_size, input_size, True)
-    data_generator_valid = DataGenerator(DataConfig.PATHS['VALID_PROCESSED_DATA'], batch_size, input_size, False)
-    # model.compile(optimizer, TrainingConfig.loss, metrics=TrainingConfig.metrics)
+    data_generator_train = DataGenerator(DataConfig.PATHS['TRAINING_PROCESSED_DATA'], batch_size, input_size, False, True)
+    data_generator_valid = DataGenerator(DataConfig.PATHS['VALID_PROCESSED_DATA'], batch_size, input_size, True, True)
+    model.compile(optimizer, TrainingConfig.loss, metrics=TrainingConfig.metrics)
 
     model.fit_generator(data_generator_train, samples_per_epoch=data_generator_train.samples_per_epoch, nb_epoch=num_epochs,
-                        validation_data=data_generator_valid, nb_val_samples=data_generator_valid.samples_per_epoch)
+                        validation_data=data_generator_valid, nb_val_samples=data_generator_valid.samples_per_epoch,
+                        callbacks=callbacks)
 
 
 def main(args):
