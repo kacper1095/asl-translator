@@ -7,7 +7,9 @@ class Config(object):
     import keras.backend as K
     IMAGE_SIZE = 64
     NB_CLASSES = 24
+    EPSILON = 1e-6
 
+    BACKEND = K.backend()
     # Keras specific
     if K.image_dim_ordering() == "th":
         INPUT_SHAPE = (3, IMAGE_SIZE, IMAGE_SIZE)
@@ -25,7 +27,7 @@ class TrainingConfig(object):
     BATCH_SIZE = 32
     TRAINING_PHASE = 1
     TESTING_PHASE = 0
-    INITIAL_LEARNING_RATE = 0.005
+    INITIAL_LEARNING_RATE = 0.05
 
     lr_schedule = [8, 12, 15]  # epoch_step
 
@@ -38,7 +40,7 @@ class TrainingConfig(object):
         if (epoch_idx + 1) < TrainingConfig.lr_schedule[0]:
             return TrainingConfig.INITIAL_LEARNING_RATE
         elif (epoch_idx + 1) < TrainingConfig.lr_schedule[1]:
-            return 0.001  # lr_decay_ratio = 0.2
+            return 0.005  # lr_decay_ratio = 0.2
         elif (epoch_idx + 1) < TrainingConfig.lr_schedule[2]:
             return 0.0005
         return 0.0001
@@ -48,11 +50,6 @@ class TrainingConfig(object):
     metrics = ['categorical_accuracy', f1]
     callbacks_monitor = 'loss'
 
-    @staticmethod
-    def get_config():
-        return {
-
-        }
 
 
 class DataConfig(object):

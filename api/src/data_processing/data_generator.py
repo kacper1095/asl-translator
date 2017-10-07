@@ -10,6 +10,7 @@ random.seed(0)
 
 from ..common import config
 from keras.preprocessing.image import flip_axis, random_rotation
+from ..keras_extensions.data_tools.augmenting_tools import gamma_augmentation
 
 def get_images(path):
     files = []
@@ -137,6 +138,8 @@ def random_preprocessing(img):
         img = flip_axis(img, 2)
     if random.random() < 0.5:
         img = random_rotation(img, random.uniform(-5, 5), 0, 1, 2, fill_mode='wrap')
+    if random.random() < 0.5:
+        img = gamma_augmentation(img)
     return img
 
 
