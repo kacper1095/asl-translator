@@ -10,7 +10,8 @@ matplotlib.use('Agg')
 
 import matplotlib.pyplot as plt
 
-REQUIRED_COLUMNS = ['categorical_accuracy', 'epoch', 'f1', 'loss', 'val_categorical_accuracy', 'val_f1', 'val_loss']
+REQUIRED_COLUMNS = ['categorical_accuracy', 'epoch', 'loss', 'val_categorical_accuracy', 'val_loss']
+OPTIONAL_COLUMNS = ['f1', 'val_f1']
 
 
 def plot():
@@ -50,13 +51,15 @@ def plot_csv_file(reader, path):
         save_path = os.path.dirname(path)
         plot_data([loss, loss_val], 'Loss', os.path.join(save_path, 'loss.png'), 'loss')
         plot_data([accuracy, accuracy_val], 'Accuracy', os.path.join(save_path, 'accuracy.png'), 'accuracy')
-        plot_data([f1, f1_val], 'F1 score', os.path.join(save_path, 'f1.png'), 'f1 score')
+        if len(f1) > 0:
+            plot_data([f1, f1_val], 'F1 score', os.path.join(save_path, 'f1.png'), 'f1 score')
         with open(os.path.join(save_path, 'stats.csv'), 'w') as f:
             f.write('epoch,name,value\n')
             write_to_file(f, np.argmin(loss), 'loss', np.min(loss))
             write_to_file(f, np.argmin(loss_val), 'val_loss', np.min(loss_val))
-            write_to_file(f, np.argmax(f1), 'f1', np.max(f1))
-            write_to_file(f, np.argmax(f1_val), 'val_f1', np.max(f1_val))
+            if len(f1) > 0:
+                write_to_file(f, np.argmax(f1), 'f1', np.max(f1))
+                write_to_file(f, np.argmax(f1_val), 'val_f1', np.max(f1_val))
             write_to_file(f, np.argmax(accuracy), 'accuracy', np.max(accuracy))
             write_to_file(f, np.argmax(accuracy_val), 'val_accuracy', np.max(accuracy_val))
 

@@ -7,6 +7,7 @@ from ..common.config import Config, DataConfig
 from skimage.feature import hog
 from skimage import color
 from sklearn.svm import SVC
+from sklearn.metrics import f1_score
 
 
 class SvmClassifier(object):
@@ -35,6 +36,7 @@ class SvmClassifier(object):
             i = 0
             print('Epoch: {}/{}'.format(epoch + 1, nb_epoch))
             losses = []
+            scores = []
             accuracies = []
             while i < samples_per_epoch:
                 x, y = next(train_generator)
@@ -46,15 +48,17 @@ class SvmClassifier(object):
                 predicted = self.classifier.predict_proba(x)
                 losses.append(self.log_loss(y, predicted))
                 accuracies.append(self.accuracy(y, predicted))
-                print("Loss: {}, accuracy: {}".format(np.mean(losses), np.mean(accuracies)))
+                scores.append(f1_score(y, np.argmax(predicted, axis=1)))
+                print("Loss: {}, accuracy: {}, f1: {}".format(np.mean(losses), np.mean(accuracies), np.mean(val_scores)))
 
             if validation_data is not None:
-                val_loss, val_acc = self.validate(validation_data, nb_val_samples)
-                print('Val_loss: {}, val_acc: {}'.format(val_loss, val_acc))
+                val_loss, val_acc, val_scores = self.validate(validation_data, nb_val_samples)
+                print('Val_loss: {}, val_acc: {}, val_f1: {}'.format(val_loss, val_acc, val_scores))
 
     def validate(self, generator, nb_val_samples):
         losses = []
         accuracies = []
+        scores = []
         i = 0
         while i < nb_val_samples:
             x, y = next(generator)
@@ -66,8 +70,8 @@ class SvmClassifier(object):
             predicted = self.classifier.predict_proba(x)
             losses.append(self.log_loss(y, predicted))
             accuracies.append(self.accuracy(y, predicted))
-        return np.mean(losses), np.mean(accuracies)
-
+            scores.append(f1_score(y, np.argmax(predicted, axis=1)))
+        return np.mean(losses), np.mean(accuracies), np.mean(scores)
 
     def log_loss(self, y_true, y_pred):
         def to_one_hot(data):
