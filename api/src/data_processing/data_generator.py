@@ -95,9 +95,9 @@ def generator(path,
                 resize_w = input_size
                 im = cv2.resize(im, dsize=(resize_w, resize_h))
                 new_h, new_w, _ = im.shape
-                im = im[:, :, ::-1].astype(np.float32)
+                im = im[:, :, ::-1].astype(np.float32) / 255.
                 if phase == config.TrainingConfig.TRAINING_PHASE:
-                    im = random_preprocessing(im / 255.)
+                    im = random_preprocessing(im)
                 if K.backend() == 'tensorflow':
                     images.append(im)
                 else:

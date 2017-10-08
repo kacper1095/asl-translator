@@ -63,7 +63,7 @@ class DataConfig(object):
         'LOG_DATA_TEXT': os.path.join('data', 'logger', 'text')
     }
 
-    AVAILABLE_CHARS = 'abcdefghijklmnopqrstuvwxyz' + string.digits
+    AVAILABLE_CHARS = string.digits + string.ascii_lowercase
     CLASS_ENCODER = LabelEncoder()
     CLASS_ENCODER.fit(list(AVAILABLE_CHARS))
 
