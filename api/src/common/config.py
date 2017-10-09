@@ -23,7 +23,7 @@ class Config(object):
 class TrainingConfig(object):
     from keras.optimizers import SGD
 
-    NB_EPOCHS = 20
+    NB_EPOCHS = 100
     NUM_WORKERS = 4
     BATCH_SIZE = 32
     TRAINING_PHASE = 1

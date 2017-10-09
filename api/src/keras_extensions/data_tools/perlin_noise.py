@@ -38,7 +38,7 @@ def generate_img(img, cube_length=7.0):
             array[y, x] *= sum_of_perlins(x, y, cube_length)
 
     noise = np.clip(array, img_min - 0.1 * img_min, img_max)
-    alpha = random.uniform(0.25, 0.75)
+    alpha = random.uniform(0.4, 0.8)
     final_img = alpha * img + (1 - alpha) * noise
     return final_img
 

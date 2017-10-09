@@ -9,7 +9,7 @@ from ..data_processing.data_generator import DataGenerator
 from ..common.config import TrainingConfig, DataConfig, Config
 from ..common.utils import print_info, ensure_dir
 
-from keras.callbacks import ModelCheckpoint, CSVLogger, TensorBoard, LearningRateScheduler
+from keras.callbacks import ModelCheckpoint, CSVLogger, TensorBoard, LearningRateScheduler, EarlyStopping
 
 RUNNING_TIME = datetime.datetime.now().strftime("%H_%M_%d_%m_%y")
 
@@ -24,7 +24,8 @@ def train(num_epochs, batch_size, input_size, num_workers):
         ModelCheckpoint(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'weights.h5'), save_best_only=True, monitor=TrainingConfig.callbacks_monitor),
         CSVLogger(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'history.csv')),
         # TensorBoard(log_dir=os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'tensorboard')),
-        LearningRateScheduler(TrainingConfig.schedule)
+        LearningRateScheduler(TrainingConfig.schedule),
+        EarlyStopping(patience=5)
     ]
 
     introduced_change = input("What new was introduced?: ")

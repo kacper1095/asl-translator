@@ -11,7 +11,7 @@ random.seed(0)
 from ..common import config
 from ..common.logger import logger
 from keras.preprocessing.image import flip_axis, random_rotation
-from ..keras_extensions.data_tools.augmenting_tools import gamma_augmentation
+from ..keras_extensions.data_tools.augmenting_tools import gamma_augmentation, perlin_noise
 
 from skimage.feature import hog
 from skimage import color
@@ -159,6 +159,8 @@ def random_preprocessing(img):
         img = random_rotation(img, random.uniform(-5, 5), 0, 1, 2, fill_mode='wrap')
     if random.random() < 0.5:
         img = gamma_augmentation(img)
+    if random.random() < 0.5:
+        img = perlin_noise(img)
     logger.log_img(img)
     return img
 
