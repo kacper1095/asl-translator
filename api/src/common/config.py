@@ -30,9 +30,9 @@ class TrainingConfig(object):
     BATCH_SIZE = 32
     TRAINING_PHASE = 1
     TESTING_PHASE = 0
-    INITIAL_LEARNING_RATE = 0.05
+    INITIAL_LEARNING_RATE = 0.03
 
-    lr_schedule = [8, 12, 15]  # epoch_step
+    lr_schedule = [14, 20, 28]  # epoch_step
 
     PATHS = {
         'MODELS': os.path.join('api', 'models')
