@@ -38,7 +38,7 @@ def train(num_epochs, batch_size, input_size, num_workers):
     optimizer = TrainingConfig.optimizer
     data_generator_train = DataGenerator(DataConfig.PATHS['TRAINING_PROCESSED_DATA'], batch_size, input_size, False)
     data_generator_valid = DataGenerator(DataConfig.PATHS['VALID_PROCESSED_DATA'], batch_size, input_size, True)
-    model.compile(optimizer, TrainingConfig.loss, metrics=TrainingConfig.metrics)
+    model.compile(TrainingConfig.available_optimizers[optimizer], TrainingConfig.loss, metrics=TrainingConfig.metrics)
 
     model.fit_generator(data_generator_train, samples_per_epoch=data_generator_train.samples_per_epoch, nb_epoch=num_epochs,
                         validation_data=data_generator_valid, nb_val_samples=data_generator_valid.samples_per_epoch,

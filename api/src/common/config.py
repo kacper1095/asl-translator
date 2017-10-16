@@ -21,7 +21,7 @@ class Config(object):
 
 
 class TrainingConfig(object):
-    from keras.optimizers import SGD
+    from keras.optimizers import SGD, Adam
 
     NB_EPOCHS = 100
     NUM_WORKERS = 4
@@ -46,7 +46,12 @@ class TrainingConfig(object):
             return 0.0005
         return 0.0001
 
-    optimizer = SGD(lr=INITIAL_LEARNING_RATE, decay=1e-6, momentum=0.9, nesterov=True)
+    optimizer = 'adam'
+    available_optimizers = {
+        'sgd': SGD(lr=INITIAL_LEARNING_RATE, decay=1e-6, momentum=0.9, nesterov=True),
+        'adam': Adam()
+    }
+
     loss = 'categorical_crossentropy'
     metrics = ['categorical_accuracy', f1]
     callbacks_monitor = 'loss'
@@ -86,3 +91,8 @@ class DataConfig(object):
         return len(DataConfig.CLASS_ENCODER.classes_)
 
 
+if __name__ == '__main__':
+    AVAILABLE_CHARS = string.digits + string.ascii_lowercase
+    print(AVAILABLE_CHARS)
+    for c in AVAILABLE_CHARS:
+        print(DataConfig.get_one_hot(c))

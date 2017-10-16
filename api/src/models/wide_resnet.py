@@ -1,7 +1,7 @@
 from keras.layers import Input, Convolution2D, BatchNormalization, Activation, Dropout, merge, AveragePooling2D, \
     Flatten, Dense
 from keras.models import Model
-from keras.optimizers import SGD
+from keras.optimizers import SGD, Adam
 from keras.regularizers import l2
 
 from api.src.models.localization_network import create_localization_net, get_spatial_transformer
@@ -12,8 +12,8 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 
 depth = 16  # table 5 on page 8 indicates best value (4.17) CIFAR-10
-k = 8  # 'widen_factor'; table 5 on page 8 indicates best value (4.17) CIFAR-10
-dropout_probability = 0.5  # table 6 on page 10 indicates best value (4.17) CIFAR-10
+k = 4  # 'widen_factor'; table 5 on page 8 indicates best value (4.17) CIFAR-10
+dropout_probability = 0.15  # table 6 on page 10 indicates best value (4.17) CIFAR-10
 
 weight_decay = 0.0005  # page 10: "Used in all experiments"
 
@@ -66,7 +66,6 @@ def _wide_basic(n_input_plane, n_output_plane, stride):
                                       subsample=v[2],
                                       border_mode=v[3],
                                       init=weight_init,
-                                      W_regularizer=l2(weight_decay),
                                       bias=use_bias)(convs)
             else:
                 convs = BatchNormalization(axis=Config.CHANNEL_AXIS)(convs)
@@ -77,7 +76,6 @@ def _wide_basic(n_input_plane, n_output_plane, stride):
                                       subsample=v[2],
                                       border_mode=v[3],
                                       init=weight_init,
-                                      W_regularizer=l2(weight_decay),
                                       bias=use_bias)(convs)
 
         # Shortcut Conntection: identity function or 1x1 convolutional
@@ -89,7 +87,6 @@ def _wide_basic(n_input_plane, n_output_plane, stride):
                                      subsample=stride,
                                      border_mode="same",
                                      init=weight_init,
-                                     W_regularizer=l2(weight_decay),
                                      bias=use_bias)(net)
         else:
             shortcut = net
@@ -124,7 +121,6 @@ def create_model(spatial_network=None):
                               subsample=(1, 1),
                               border_mode="same",
                               init=weight_init,
-                              W_regularizer=l2(weight_decay),
                               bias=use_bias)(
             spatial_network(inputs))  # "One conv at the beginning (spatial size: 32x32)"
     else:
@@ -132,7 +128,6 @@ def create_model(spatial_network=None):
                               subsample=(1, 1),
                               border_mode="same",
                               init=weight_init,
-                              W_regularizer=l2(weight_decay),
                               bias=use_bias)(inputs)  # "One conv at the beginning (spatial size: 32x32)"
 
     # Add wide residual blocks
@@ -148,10 +143,10 @@ def create_model(spatial_network=None):
     relu = Activation("relu")(batch_norm)
 
     # Classifier block
-    pool = AveragePooling2D(pool_size=(8, 8), strides=(1, 1), border_mode="same")(relu)
+    pool = AveragePooling2D(pool_size=(8, 8), strides=(8, 8), border_mode="same")(relu)
     flatten = Flatten()(pool)
     predictions = Dense(output_dim=DataConfig.get_number_of_classes(), init=weight_kernel_initializer,
-                        bias=use_bias, W_regularizer=l2(weight_decay), activation="softmax")(flatten)
+                        bias=use_bias, activation="softmax")(flatten)
 
     model = Model(input=inputs, output=predictions)
     return model
