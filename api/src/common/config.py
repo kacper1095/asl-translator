@@ -9,6 +9,8 @@ class Config(object):
     NB_CLASSES = 24
     EPSILON = 1e-6
     LOGGING = False
+    ACTIVATION = 'elu'
+    WEIGHT_INIT = 'he_normal'
 
     BACKEND = K.backend()
     # Keras specific
@@ -68,7 +70,8 @@ class DataConfig(object):
         'LOG_DATA_TEXT': os.path.join('data', 'logger', 'text')
     }
 
-    AVAILABLE_CHARS = string.digits + string.ascii_lowercase
+    # AVAILABLE_CHARS = string.digits + string.ascii_lowercase
+    AVAILABLE_CHARS = string.ascii_lowercase
     CLASS_ENCODER = LabelEncoder()
     CLASS_ENCODER.fit(list(AVAILABLE_CHARS))
 

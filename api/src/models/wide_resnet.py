@@ -1,7 +1,6 @@
 from keras.layers import Input, Convolution2D, BatchNormalization, Activation, Dropout, merge, AveragePooling2D, \
     Flatten, Dense
 from keras.models import Model
-from keras.optimizers import SGD, Adam
 from keras.regularizers import l2
 
 from api.src.models.localization_network import create_localization_net, get_spatial_transformer
@@ -32,8 +31,6 @@ def schedule(epoch_idx):
         return 0.004
     return 0.0008
 
-
-sgd = SGD(lr=0.1, momentum=0.9, nesterov=True)
 
 use_bias = False  # following functions 'FCkernel_initializer(model)' and 'DisableBias(model)' in utils.lua
 weight_kernel_initializer = "he_normal"  # follows the 'MSRkernel_initializer(model)' function in utils.lua
