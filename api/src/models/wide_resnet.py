@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 depth = 16  # table 5 on page 8 indicates best value (4.17) CIFAR-10
 k = 4  # 'widen_factor'; table 5 on page 8 indicates best value (4.17) CIFAR-10
-dropout_probability = 0.15  # table 6 on page 10 indicates best value (4.17) CIFAR-10
+dropout_probability = 0.25  # table 6 on page 10 indicates best value (4.17) CIFAR-10
 
 weight_decay = 0.0005  # page 10: "Used in all experiments"
 

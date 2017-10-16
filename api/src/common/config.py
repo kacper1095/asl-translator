@@ -46,7 +46,7 @@ class TrainingConfig(object):
             return 0.0005
         return 0.0001
 
-    optimizer = 'adam'
+    optimizer = 'sgd'
     available_optimizers = {
         'sgd': SGD(lr=INITIAL_LEARNING_RATE, decay=1e-6, momentum=0.9, nesterov=True),
         'adam': Adam()

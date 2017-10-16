@@ -153,14 +153,14 @@ def generator_with_feature_extraction(path,
 
 
 def random_preprocessing(img):
-    if random.random() < 0.5:
+    if random.random() < 0.25:
         img = flip_axis(img, 1)
-    if random.random() < 0.5:
+    if random.random() < 0.25:
         img = random_rotation(img, random.uniform(-5, 5), 0, 1, 2, fill_mode='wrap')
-    if random.random() < 0.5:
+    if random.random() < 0.25:
         img = gamma_augmentation(img)
-    if random.random() < 0.5:
-        img = perlin_noise(img)
+    # if random.random() < 0.5:
+    #     img = perlin_noise(img)
     logger.log_img(img)
     return img
 
