@@ -42,7 +42,7 @@ def train(num_epochs, batch_size, input_size, num_workers):
 
     model.fit_generator(data_generator_train, samples_per_epoch=data_generator_train.samples_per_epoch, nb_epoch=num_epochs,
                         validation_data=data_generator_valid, nb_val_samples=data_generator_valid.samples_per_epoch,
-                        callbacks=callbacks)
+                        callbacks=callbacks, nb_worker=num_workers)
 
 
 def main(args):

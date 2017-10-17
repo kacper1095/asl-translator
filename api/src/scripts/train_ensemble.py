@@ -1,31 +1,24 @@
-import os
 import argparse
-import datetime
-import yaml
+import os
 import api.src.common.initial_environment_config
+import datetime
 
-from ..models.svm import create_model
+import yaml
 from ..data_processing.data_generator import DataGenerator
 from ..common.config import TrainingConfig, DataConfig, Config
 from ..common.utils import print_info, ensure_dir
 
-from keras.callbacks import ModelCheckpoint, CSVLogger, TensorBoard, LearningRateScheduler, EarlyStopping
+from api.src.keras_extensions.data_tools.callbacks import SnapshotCallbackBuilder
+from api.src.models import wrn_by_titu as WRN
 
 RUNNING_TIME = datetime.datetime.now().strftime("%H_%M_%d_%m_%y")
 
 
-def train(num_epochs, batch_size, input_size, num_workers):
+def train(num_epochs, batch_size, input_size, M, alpha_zero, wrn_N, wrn_k, num_workers):
     ensure_dir(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME))
-    model = create_model()
-
-    callbacks = [
-        ModelCheckpoint(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'weights.h5'), save_best_only=True, monitor=TrainingConfig.callbacks_monitor),
-        CSVLogger(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'history.csv')),
-        # TensorBoard(log_dir=os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'tensorboard')),
-        LearningRateScheduler(TrainingConfig.schedule),
-        EarlyStopping(patience=5)
-    ]
-
+    snapshot = SnapshotCallbackBuilder(num_epochs, M, os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME) , alpha_zero)
+    model = WRN.create_wide_residual_network(Config.INPUT_SHAPE, N=wrn_N, k=wrn_k, dropout=0.00)
+    model_prefix = os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'wrn-%d-%d') % (wrn_N * 6 + 4, wrn_k)
     introduced_change = input("What new was introduced?: ")
     with open(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'change.txt'), 'w') as f:
         f.write(introduced_change)
@@ -40,20 +33,29 @@ def train(num_epochs, batch_size, input_size, num_workers):
 
     model.fit_generator(data_generator_train, samples_per_epoch=data_generator_train.samples_per_epoch, nb_epoch=num_epochs,
                         validation_data=data_generator_valid, nb_val_samples=data_generator_valid.samples_per_epoch,
-                        callbacks=callbacks)
+                        callbacks=snapshot.get_callbacks(model_prefix=model_prefix), nb_worker=num_workers)
 
 
 def main(args):
     print_info("Training")
-    train(args.num_epochs, args.batch_size, args.input_size, args.num_workers)
+    train(args.num_epochs, args.batch_size, args.input_size, args.M, args.alpha_zero, args.wrn_N, args.wrn_k, args.num_workers)
     print_info("Finished")
 
 
 if __name__ == '__main__':
     argparser = argparse.ArgumentParser(description='Script performing training')
-    argparser.add_argument('--num_epochs', default=TrainingConfig.NB_EPOCHS, type=int, help='Number of training epochs')
-    argparser.add_argument('--num_workers', type=int, default=TrainingConfig.NUM_WORKERS, help='Number of workers during training')
+    argparser.add_argument('--num_epochs', default=TrainingConfig.NB_EPOCHS, type=int,
+                           help='Number of training epochs')
+    argparser.add_argument('--M', type=int, default=5, help='Number of snapshots')
+    argparser.add_argument('--num_workers', type=int, default=TrainingConfig.NUM_WORKERS,
+                           help='Number of workers during training')
     argparser.add_argument('--batch_size', type=int, default=TrainingConfig.BATCH_SIZE, help='Batch size')
     argparser.add_argument('--input_size', type=int, default=Config.IMAGE_SIZE, help='Image size to input')
+
+    argparser.add_argument('--alpha_zero', type=float, default=0.1, help='Initial learning rate')
+
+    # Wide ResNet Parameters
+    argparser.add_argument('--wrn_N', type=int, default=2, help='Number of WRN blocks. Computed as N = (n - 4) / 6.')
+    argparser.add_argument('--wrn_k', type=int, default=4, help='Width factor of WRN')
     arguments = argparser.parse_args()
     main(arguments)
