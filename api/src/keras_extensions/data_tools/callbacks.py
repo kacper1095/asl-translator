@@ -1,10 +1,13 @@
 import matplotlib
+
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import os
+import numpy as np
 import datetime
 
 from keras.callbacks import Callback
+import keras.callbacks as callbacks
 
 
 class PlotCallback(Callback):
@@ -46,11 +49,6 @@ class PlotCallback(Callback):
         self.plotter.savefig(
             os.path.join(self.folder_path, 'history_{}.png'.format(self.plot_name)))
 
-import numpy as np
-import os
-
-import keras.callbacks as callbacks
-from keras.callbacks import Callback
 
 class SnapshotModelCheckpoint(Callback):
     """Callback that saves the snapshot weights of the model.
@@ -74,7 +72,7 @@ class SnapshotModelCheckpoint(Callback):
         if epoch != 0 and (epoch + 1) % self.check == 0:
             filepath = self.fn_prefix + "-%d.h5" % ((epoch + 1) // self.check)
             self.model.save_weights(filepath, overwrite=True)
-            #print("Saved snapshot at weights/%s_%d.h5" % (self.fn_prefix, epoch))
+            # print("Saved snapshot at weights/%s_%d.h5" % (self.fn_prefix, epoch))
 
 
 class SnapshotCallbackBuilder:
@@ -107,10 +105,12 @@ class SnapshotCallbackBuilder:
                  SnapshotModelCheckpoint] which can be provided to the 'fit' function
         """
 
-        callback_list = [callbacks.ModelCheckpoint(os.path.join(self.checkpoint_path, "/%s-Best.h5") % model_prefix, monitor="val_acc",
-                                                    save_best_only=True, save_weights_only=True),
+        callback_list = [callbacks.ModelCheckpoint(os.path.join(self.checkpoint_path, "%s-Best.h5") % model_prefix,
+                                                   monitor="val_acc",
+                                                   save_best_only=True, save_weights_only=True),
                          callbacks.LearningRateScheduler(schedule=self._cosine_anneal_schedule),
-                         SnapshotModelCheckpoint(self.T, self.M, fn_prefix=os.path.join(self.checkpoint_path,'%s') % model_prefix)]
+                         SnapshotModelCheckpoint(self.T, self.M,
+                                                 fn_prefix=os.path.join(self.checkpoint_path, '%s') % model_prefix)]
 
         return callback_list
 
