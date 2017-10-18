@@ -6,7 +6,6 @@ from api.src.keras_extensions.metrics import f1
 class Config(object):
     import keras.backend as K
     IMAGE_SIZE = 64
-    NB_CLASSES = 24
     EPSILON = 1e-6
     LOGGING = False
     ACTIVATION = 'elu'
@@ -20,6 +19,18 @@ class Config(object):
     else:
         INPUT_SHAPE = (IMAGE_SIZE, IMAGE_SIZE, 3)
         CHANNEL_AXIS = 3
+
+    @staticmethod
+    def get_config():
+        return {
+            'image_size': Config.IMAGE_SIZE,
+            'epsilon': Config.EPSILON,
+            'logging': Config.LOGGING,
+            'activation': Config.ACTIVATION,
+            'weight_init': Config.WEIGHT_INIT,
+            'input_shape': Config.INPUT_SHAPE,
+            'channel_axis': Config.CHANNEL_AXIS
+        }
 
 
 class TrainingConfig(object):
@@ -58,6 +69,22 @@ class TrainingConfig(object):
     metrics = ['categorical_accuracy', f1]
     callbacks_monitor = 'loss'
 
+    @staticmethod
+    def get_config():
+        return {
+            'nb_epochs': TrainingConfig.NB_EPOCHS,
+            'num_workers': TrainingConfig.NUM_WORKERS,
+            'batch_size': TrainingConfig.BATCH_SIZE,
+            'training_phase': TrainingConfig.TRAINING_PHASE,
+            'testing_phase': TrainingConfig.TESTING_PHASE,
+            'initial_lr': TrainingConfig.INITIAL_LEARNING_RATE,
+            'lr_schedule': TrainingConfig.lr_schedule,
+            'paths': TrainingConfig.PATHS,
+            'optimizer': TrainingConfig.optimizer,
+            'loss': TrainingConfig.loss,
+            'callbacks_monitor': TrainingConfig.callbacks_monitor
+        }
+
 
 class DataConfig(object):
     from sklearn.preprocessing import LabelEncoder
@@ -92,6 +119,14 @@ class DataConfig(object):
     @staticmethod
     def get_number_of_classes():
         return len(DataConfig.CLASS_ENCODER.classes_)
+
+    @staticmethod
+    def get_config():
+        return {
+            'paths': DataConfig.PATHS,
+            'available_chars': DataConfig.AVAILABLE_CHARS,
+            'classes': DataConfig.CLASS_ENCODER.classes_,
+        }
 
 
 if __name__ == '__main__':

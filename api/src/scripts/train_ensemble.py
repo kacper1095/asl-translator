@@ -24,7 +24,7 @@ def train(num_epochs, batch_size, input_size, M, alpha_zero, wrn_N, wrn_k, num_w
         f.write(introduced_change)
 
     with open(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'config.yml'), 'w') as f:
-        yaml.dump([TrainingConfig.__dict__, Config.__dict__, DataConfig.__dict__], f, default_flow_style=False)
+        yaml.dump(list([TrainingConfig.get_config(), Config.get_config(), DataConfig.get_config()]), f, default_flow_style=False)
 
     optimizer = TrainingConfig.optimizer
     data_generator_train = DataGenerator(DataConfig.PATHS['TRAINING_PROCESSED_DATA'], batch_size, input_size, False, False)

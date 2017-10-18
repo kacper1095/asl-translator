@@ -12,12 +12,12 @@ from api.src.common.config import Config, DataConfig
 
 
 def initial_conv(input):
-    x = Convolution2D(16, 3, 3, border_mode='same')(input)
-
     channel_axis = 1 if K.image_dim_ordering() == "th" else -1
+    x = BatchNormalization(axis=channel_axis)(input)
+    x = Activation(Config.ACTIVATION)(x)
+    x = Convolution2D(16, 3, 3, border_mode='same')(x)
 
-    x = BatchNormalization(axis=channel_axis)(x)
-    x = Activation('relu')(x)
+
     return x
 
 
@@ -34,15 +34,15 @@ def conv1_block(input, k=1, dropout=0.0):
         if init._keras_shape[-1] != 16 * k:
             init = Convolution2D(16 * k, 1, 1, activation='linear', border_mode='same')(init)
 
-    x = Convolution2D(16 * k, 3, 3, border_mode='same')(input)
-    x = BatchNormalization(axis=channel_axis)(x)
-    x = Activation('relu')(x)
+    x = BatchNormalization(axis=channel_axis)(input)
+    x = Activation(Config.ACTIVATION)(x)
+    x = Convolution2D(16 * k, 3, 3, border_mode='same')(x)
 
     if dropout > 0.0: x = Dropout(dropout)(x)
 
-    x = Convolution2D(16 * k, 3, 3, border_mode='same')(x)
     x = BatchNormalization(axis=channel_axis)(x)
-    x = Activation('relu')(x)
+    x = Activation(Config.ACTIVATION)(x)
+    x = Convolution2D(16 * k, 3, 3, border_mode='same')(x)
 
     m = merge([init, x], mode='sum')
     return m
@@ -60,15 +60,15 @@ def conv2_block(input, k=1, dropout=0.0):
         if init._keras_shape[-1] != 32 * k:
             init = Convolution2D(32 * k, 1, 1, activation='linear', border_mode='same')(init)
 
-    x = Convolution2D(32 * k, 3, 3, border_mode='same')(input)
-    x = BatchNormalization(axis=channel_axis)(x)
-    x = Activation('relu')(x)
+    x = BatchNormalization(axis=channel_axis)(input)
+    x = Activation(Config.ACTIVATION)(x)
+    x = Convolution2D(32 * k, 3, 3, border_mode='same')(x)
 
     if dropout > 0.0: x = Dropout(dropout)(x)
 
-    x = Convolution2D(32 * k, 3, 3, border_mode='same')(x)
     x = BatchNormalization(axis=channel_axis)(x)
-    x = Activation('relu')(x)
+    x = Activation(Config.ACTIVATION)(x)
+    x = Convolution2D(32 * k, 3, 3, border_mode='same')(x)
 
     m = merge([init, x], mode='sum')
     return m
@@ -86,15 +86,15 @@ def conv3_block(input, k=1, dropout=0.0):
         if init._keras_shape[-1] != 64 * k:
             init = Convolution2D(64 * k, 1, 1, activation='linear', border_mode='same')(init)
 
-    x = Convolution2D(64 * k, 3, 3, border_mode='same')(input)
-    x = BatchNormalization(axis=channel_axis)(x)
-    x = Activation('relu')(x)
+    x = BatchNormalization(axis=channel_axis)(input)
+    x = Activation(Config.ACTIVATION)(x)
+    x = Convolution2D(64 * k, 3, 3, border_mode='same')(x)
 
     if dropout > 0.0: x = Dropout(dropout)(x)
 
-    x = Convolution2D(64 * k, 3, 3, border_mode='same')(x)
     x = BatchNormalization(axis=channel_axis)(x)
-    x = Activation('relu')(x)
+    x = Activation(Config.ACTIVATION)(x)
+    x = Convolution2D(64 * k, 3, 3, border_mode='same')(x)
 
     m = merge([init, x], mode='sum')
     return m
