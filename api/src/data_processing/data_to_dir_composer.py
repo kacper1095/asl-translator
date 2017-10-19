@@ -6,9 +6,11 @@ import tqdm
 
 from api.src.common.config import DataConfig
 from api.src.common.utils import ensure_dir, print_info
+from .green_edge_cutter import process_img
 
 
-AVAILABLE_CHARS = string.ascii_lowercase + string.digits
+AVAILABLE_CHARS = string.ascii_lowercase
+NUM_OF_CUT_BG_IMAGES_INSTANCES = 10
 
 PATHS = {
     'empslocal': os.path.join(DataConfig.PATHS['RAW_DATA'], 'empslocal', 'dataset5'),
@@ -26,6 +28,8 @@ def parse_empslocal_dataset():
                 if img_file.startswith('depth'):
                     continue
                 src_path = os.path.join(empslocal, volunteer_folder, letter_folder, img_file)
+                if letter_folder.lower() not in AVAILABLE_CHARS:
+                    continue
                 if volunteer_folder in training_volunteers_range:
                     dst_folder_path = os.path.join(DataConfig.PATHS['TRAINING_PROCESSED_DATA'], letter_folder.lower())
                 elif volunteer_folder in validation_volunteers_range:
@@ -44,6 +48,8 @@ def parse_massey_data():
     for file_name in tqdm.tqdm(os.listdir(massey)):
         sign, volunteer_number = parse_massey_file_name(file_name)
         src_path = os.path.join(massey, file_name)
+        if sign.lower() not in AVAILABLE_CHARS:
+            continue
         if volunteer_number in training_volunteers_range:
             dst_folder_path = os.path.join(DataConfig.PATHS['TRAINING_PROCESSED_DATA'], sign.lower())
         elif volunteer_number in validation_volunteers_range:
@@ -51,7 +57,15 @@ def parse_massey_data():
         else:
             raise ValueError("Unknown range for this volunteer: ", volunteer_number)
         dst_path = os.path.join(dst_folder_path, str(len(os.listdir(dst_folder_path))) + '.png')
-        shutil.copy(src_path, dst_path)
+        if volunteer_number in validation_volunteers_range:
+            shutil.copy(src_path, dst_path)
+        else:
+            dst_path = os.path.join(dst_folder_path, str(len(os.listdir(dst_folder_path))) + '.png')
+            shutil.copy(src_path, dst_path)
+            for _ in range(NUM_OF_CUT_BG_IMAGES_INSTANCES):
+                dst_path = os.path.join(dst_folder_path, str(len(os.listdir(dst_folder_path))) + '.png')
+                process_img(src_path, dst_path)
+
     print_info('Processed massey')
 
 DATASET_FUNCTIONS = [
@@ -81,7 +95,7 @@ def parse_massey_file_name(file_name):
 
 def main(args):
     create_letter_dirs()
-    clear_dirs()
+    # clear_dirs()
     for data_function in DATASET_FUNCTIONS:
         data_function()
 

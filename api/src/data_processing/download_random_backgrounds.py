@@ -12,7 +12,7 @@ import time
 RANDOM_BACKGROUNDS_FOLDER = DataConfig.PATHS['RANDOM_BACKGROUNDS_FOLDER']
 search_keyword  = ['cosmos', 'buildings', 'computer', 'landscape', 'people',
            'machinery']
-keywords = [' high resolution']
+keywords = ['']
 
 ensure_dir(RANDOM_BACKGROUNDS_FOLDER)
 
@@ -89,13 +89,6 @@ while i < len(search_keyword):
     search = search_keywords.replace(' ', '%20')
 
     # make a search keyword  directory
-    try:
-        os.makedirs(search_keywords)
-    except OSError as e:
-        if e.errno != 17:
-            raise
-            # time.sleep might help here
-        pass
 
     j = 0
     while j < len(keywords):
@@ -120,7 +113,7 @@ while i < len(search_keyword):
 
     k = 0
     errorCount = 0
-    while (k < len(items)):
+    while (k < len(items[:10])):
         from urllib.request import urlopen, Request
         from urllib.error import URLError, HTTPError
 
