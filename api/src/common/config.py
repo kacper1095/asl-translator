@@ -67,7 +67,8 @@ class DataConfig(object):
         'TRAINING_PROCESSED_DATA': os.path.join('data', 'processed', 'train'),
         'VALID_PROCESSED_DATA': os.path.join('data', 'processed', 'valid'),
         'LOG_DATA_IMAGES': os.path.join('data', 'logger', 'images'),
-        'LOG_DATA_TEXT': os.path.join('data', 'logger', 'text')
+        'LOG_DATA_TEXT': os.path.join('data', 'logger', 'text'),
+        'RANDOM_BACKGROUNDS_FOLDER': os.path.join('data', 'raw', 'random_backgrounds')
     }
 
     # AVAILABLE_CHARS = string.digits + string.ascii_lowercase
