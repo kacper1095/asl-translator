@@ -18,13 +18,13 @@ def train(num_epochs, batch_size, input_size, M, alpha_zero, wrn_N, wrn_k, num_w
     ensure_dir(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME))
     snapshot = SnapshotCallbackBuilder(num_epochs, M, os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME) , alpha_zero)
     model = WRN.create_wide_residual_network(Config.INPUT_SHAPE, N=wrn_N, k=wrn_k, dropout=0.00)
-    model_prefix = os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'wrn-%d-%d') % (wrn_N * 6 + 4, wrn_k)
+    model_prefix = 'wrn-%d-%d' % (wrn_N * 6 + 4, wrn_k)
     introduced_change = input("What new was introduced?: ")
     with open(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'change.txt'), 'w') as f:
         f.write(introduced_change)
 
     with open(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'config.yml'), 'w') as f:
-        yaml.dump([TrainingConfig.__dict__, Config.__dict__, DataConfig.__dict__], f, default_flow_style=False)
+        yaml.dump(list([TrainingConfig.get_config(), Config.get_config(), DataConfig.get_config()]), f, default_flow_style=False)
 
     optimizer = TrainingConfig.optimizer
     data_generator_train = DataGenerator(DataConfig.PATHS['TRAINING_PROCESSED_DATA'], batch_size, input_size, False, False)

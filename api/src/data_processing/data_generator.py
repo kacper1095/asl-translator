@@ -177,7 +177,7 @@ class DataGenerator(object):
                                                                batch_size, self.training_phase)
         else:
             self.generator = generator(input_size=input_size, batch_size=batch_size,
-                                   path=dir_path, phase=self.training_phase)
+                                       path=dir_path, phase=self.training_phase)
         self.lock = threading.Lock()
 
     def __iter__(self):
