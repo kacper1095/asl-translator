@@ -33,7 +33,7 @@ def get_class_from_path(im_fn):
 def prepare_image(img):
     img = cv2.resize(img, (config.Config.IMAGE_SIZE, config.Config.IMAGE_SIZE))
     img = color.rgb2gray(img)
-    features = hog(img, 8, pixels_per_cell=(8, 8), cells_per_block=(1, 1), visualise=False)
+    features = hog(img, 8, pixels_per_cell=(8, 8), cells_per_block=(3, 3), visualise=False)
     return features
 
 
@@ -111,6 +111,13 @@ def generator(path,
                 import traceback
                 traceback.print_exc()
                 break
+
+
+def get_generator_for_svm(created_data_generator):
+    while True:
+        for x, y in created_data_generator:
+            y = (y - 1.0) + y
+            yield x, y
 
 
 def generator_with_feature_extraction(path,

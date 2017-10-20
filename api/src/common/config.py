@@ -8,8 +8,9 @@ class Config(object):
     IMAGE_SIZE = 64
     EPSILON = 1e-6
     LOGGING = False
-    ACTIVATION = 'elu'
+    ACTIVATION = 'relu'
     WEIGHT_INIT = 'he_normal'
+    NO_SAVE = False
 
     BACKEND = K.backend()
     # Keras specific
@@ -41,9 +42,10 @@ class TrainingConfig(object):
     BATCH_SIZE = 32
     TRAINING_PHASE = 1
     TESTING_PHASE = 0
-    INITIAL_LEARNING_RATE = 0.03
+    INITIAL_LEARNING_RATE = 0.1
+    SVM_WEIGHT_REGULARIZER = 0.01
 
-    lr_schedule = [14, 20, 28]  # epoch_step
+    lr_schedule = [12, 18, 24]  # epoch_step
 
     PATHS = {
         'MODELS': os.path.join('api', 'models')
@@ -54,12 +56,12 @@ class TrainingConfig(object):
         if (epoch_idx + 1) < TrainingConfig.lr_schedule[0]:
             return TrainingConfig.INITIAL_LEARNING_RATE
         elif (epoch_idx + 1) < TrainingConfig.lr_schedule[1]:
-            return 0.005  # lr_decay_ratio = 0.2
+            return TrainingConfig.INITIAL_LEARNING_RATE * 0.2
         elif (epoch_idx + 1) < TrainingConfig.lr_schedule[2]:
-            return 0.0005
-        return 0.0001
+            return TrainingConfig.INITIAL_LEARNING_RATE * 0.2 * 0.2
+        return TrainingConfig.INITIAL_LEARNING_RATE * 0.2 * 0.2 * 0.2
 
-    optimizer = 'sgd'
+    optimizer = 'adam'
     available_optimizers = {
         'sgd': SGD(lr=INITIAL_LEARNING_RATE, decay=1e-6, momentum=0.9, nesterov=True),
         'adam': Adam()
@@ -82,7 +84,8 @@ class TrainingConfig(object):
             'paths': TrainingConfig.PATHS,
             'optimizer': TrainingConfig.optimizer,
             'loss': TrainingConfig.loss,
-            'callbacks_monitor': TrainingConfig.callbacks_monitor
+            'callbacks_monitor': TrainingConfig.callbacks_monitor,
+            'svm_regularizer': TrainingConfig.SVM_WEIGHT_REGULARIZER
         }
 
 
