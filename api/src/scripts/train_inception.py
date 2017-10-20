@@ -4,7 +4,7 @@ import datetime
 import yaml
 import api.src.common.initial_environment_config
 
-from ..models.wide_resnet import create_model, get_spatial_transformer
+from ..models.inception import create_model
 from ..data_processing.data_generator import DataGenerator
 from ..common.config import TrainingConfig, DataConfig, Config
 from ..common.utils import print_info, ensure_dir
@@ -17,7 +17,6 @@ RUNNING_TIME = datetime.datetime.now().strftime("%H_%M_%d_%m_%y")
 def train(num_epochs, batch_size, input_size, num_workers):
     if not Config.NO_SAVE:
         ensure_dir(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME))
-    # model = create_model(get_spatial_transformer())
     model = create_model()
     model.summary()
 

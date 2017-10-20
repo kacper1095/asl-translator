@@ -42,7 +42,7 @@ class TrainingConfig(object):
     BATCH_SIZE = 32
     TRAINING_PHASE = 1
     TESTING_PHASE = 0
-    INITIAL_LEARNING_RATE = 0.1
+    INITIAL_LEARNING_RATE = 0.03
     SVM_WEIGHT_REGULARIZER = 0.01
 
     lr_schedule = [12, 18, 24]  # epoch_step
@@ -61,7 +61,7 @@ class TrainingConfig(object):
             return TrainingConfig.INITIAL_LEARNING_RATE * 0.2 * 0.2
         return TrainingConfig.INITIAL_LEARNING_RATE * 0.2 * 0.2 * 0.2
 
-    optimizer = 'adam'
+    optimizer = 'sgd'
     available_optimizers = {
         'sgd': SGD(lr=INITIAL_LEARNING_RATE, decay=1e-6, momentum=0.9, nesterov=True),
         'adam': Adam()

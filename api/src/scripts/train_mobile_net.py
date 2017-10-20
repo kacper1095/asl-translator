@@ -4,7 +4,7 @@ import datetime
 import yaml
 import api.src.common.initial_environment_config
 
-from ..models.wide_resnet import create_model, get_spatial_transformer
+from ..models.mobile_net import create_model
 from ..data_processing.data_generator import DataGenerator
 from ..common.config import TrainingConfig, DataConfig, Config
 from ..common.utils import print_info, ensure_dir
