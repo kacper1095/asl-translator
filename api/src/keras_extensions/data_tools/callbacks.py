@@ -109,7 +109,7 @@ class SnapshotCallbackBuilder:
                                                    monitor="val_loss",
                                                    save_best_only=True, save_weights_only=False),
                          callbacks.LearningRateScheduler(schedule=self._cosine_anneal_schedule),
-                         # callbacks.CSVLogger(os.path.join(self.checkpoint_path, 'history.csv')),
+                         callbacks.CSVLogger(os.path.join(self.checkpoint_path, 'history.csv')),
                          SnapshotModelCheckpoint(self.T, self.M,
                                                  fn_prefix=os.path.join(self.checkpoint_path, '%s') % model_prefix)]
 

@@ -164,9 +164,9 @@ def random_preprocessing(img):
     img = random_rotation(img, random.uniform(-10, 10), 0, 1, 2)
     img = random_zoom(img, (1.0, 1.5))
     img = random_shift(img, 0.2, 0.2)
-    img = gamma_augmentation(img)
+    # img = gamma_augmentation(img)
     img = poisson_noise(img)
-    logger.log_img(img)
+    logger.log_img(img[..., ::-1])
     return img
 
 

@@ -95,7 +95,7 @@ def gamma_augmentation(x):
 
 
 def poisson_noise(x):
-    peak = 0.7
+    peak = 0.85
     noisy = np.random.poisson(x * 255.0 * peak) / peak / 255.0
     return noisy
 

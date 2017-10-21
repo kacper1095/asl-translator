@@ -4,7 +4,7 @@ import datetime
 import yaml
 import api.src.common.initial_environment_config
 
-from ..models.wide_resnet import create_model, get_spatial_transformer
+from ..models.wrn_by_titu import create_wide_residual_network
 from ..data_processing.data_generator import DataGenerator
 from ..common.config import TrainingConfig, DataConfig, Config
 from ..common.utils import print_info, ensure_dir
@@ -18,14 +18,14 @@ def train(num_epochs, batch_size, input_size, num_workers):
     if not Config.NO_SAVE:
         ensure_dir(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME))
     # model = create_model(get_spatial_transformer())
-    model = create_model()
+    model = create_wide_residual_network(Config.INPUT_SHAPE, N=2, k=4)
     model.summary()
 
     callbacks = [
         ModelCheckpoint(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'weights.h5'), save_best_only=True, monitor=TrainingConfig.callbacks_monitor),
         CSVLogger(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'history.csv')),
         # TensorBoard(log_dir=os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'tensorboard')),
-        LearningRateScheduler(TrainingConfig.schedule),
+        # LearningRateScheduler(TrainingConfig.schedule),
         EarlyStopping(patience=12)
     ] if not Config.NO_SAVE else []
 
