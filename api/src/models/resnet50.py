@@ -1,7 +1,7 @@
 from api.src.common import initial_environment_config
 from api.src.common.config import Config, DataConfig
 
-from keras.layers import Input, GlobalAveragePooling2D, Dropout, Dense
+from keras.layers import Input, GlobalAveragePooling2D, Dropout, Dense, ZeroPadding2D
 from keras.models import Model
 from keras.applications.resnet50 import ResNet50
 
@@ -13,7 +13,7 @@ def create_model():
         if layer.name == 'res3a_branch2a':
             break
         layer.trainable = False
-    x = GlobalAveragePooling2D()(model.output)
+    x = GlobalAveragePooling2D()(model.layers[-2].output)
     x = Dropout(0.2)(x)
     x = Dense(DataConfig.get_number_of_classes(), activation='softmax')(x)
 

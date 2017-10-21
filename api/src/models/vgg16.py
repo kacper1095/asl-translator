@@ -10,14 +10,14 @@ def create_model():
     init = Input(Config.INPUT_SHAPE)
     model = VGG16(include_top=False, input_tensor=init)
     for layer in model.layers:
-        if layer.name == 'block3_conv3':
+        if layer.name == 'block3_pool':
             break
         layer.trainable = False
     x = GlobalAveragePooling2D()(model.output)
     x = Dropout(0.2)(x)
     x = Dense(DataConfig.get_number_of_classes(), activation='softmax')(x)
 
-    model = Model(init, x, 'resnet50')
+    model = Model(init, x, 'vgg16')
     return model
 
 
