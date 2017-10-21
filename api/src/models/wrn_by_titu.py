@@ -145,15 +145,15 @@ def create_wide_residual_network(input_dim, N=2, k=1, dropout=0.0, verbose=1):
     return model
 
 if __name__ == "__main__":
-    from keras.utils.visualize_util import plot
     from keras.layers import Input
     from keras.models import Model
 
-    init = (3, 32, 32)
+    init = (3, 64, 64)
 
-    wrn_28_10 = create_wide_residual_network(init, N=4, k=10, dropout=0.25)
+    model = create_wide_residual_network(init, N=2, k=4, dropout=0.25)
 
-    model = Model(init, wrn_28_10)
 
     model.summary()
+    with open('architecture.json', 'w') as f:
+        f.write(model.to_json())
     # plot(model, "WRN-28-10.png", show_shapes=True, show_layer_names=True)
