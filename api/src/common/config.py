@@ -7,9 +7,9 @@ class Config(object):
     import keras.backend as K
     IMAGE_SIZE = 64
     EPSILON = 1e-6
-    LOGGING = False
     ACTIVATION = 'relu'
     WEIGHT_INIT = 'he_normal'
+    LOGGING = False
     NO_SAVE = False
 
     BACKEND = K.backend()

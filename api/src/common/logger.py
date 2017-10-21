@@ -16,12 +16,13 @@ class Logger(object):
         ensure_dir(DataConfig.PATHS['LOG_DATA_IMAGES'])
         ensure_dir(DataConfig.PATHS['LOG_DATA_TEXT'])
 
-    def log_img(self, img):
+    def log_img(self, img, name=''):
+        name = '_' + name if name != '' else name
         if Config.LOGGING:
             self.clear_files_if_necessary()
             if img.max() < 127:
                 img *= 255
-            cv2.imwrite(os.path.join(DataConfig.PATHS['LOG_DATA_IMAGES'], self.get_time_stamp() + '.png'), img)
+            cv2.imwrite(os.path.join(DataConfig.PATHS['LOG_DATA_IMAGES'], self.get_time_stamp() + name + '.png'), img)
 
     def log_txt(self, txt):
         if Config.LOGGING:

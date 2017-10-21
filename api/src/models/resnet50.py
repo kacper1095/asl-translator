@@ -10,7 +10,7 @@ def create_model():
     init = Input(Config.INPUT_SHAPE)
     model = ResNet50(include_top=False, input_tensor=init)
     for layer in model.layers:
-        if layer.name == 'res3a_branch2a':
+        if layer.name == 'res2a_branch2c':
             break
         layer.trainable = False
     x = GlobalAveragePooling2D()(model.layers[-2].output)

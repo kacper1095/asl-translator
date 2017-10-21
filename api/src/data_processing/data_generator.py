@@ -10,8 +10,8 @@ random.seed(0)
 
 from ..common import config
 from ..common.logger import logger
-from keras.preprocessing.image import flip_axis, random_rotation
-from ..keras_extensions.data_tools.augmenting_tools import gamma_augmentation, perlin_noise
+from keras.preprocessing.image import flip_axis, random_rotation, random_shift, random_zoom
+from ..keras_extensions.data_tools.augmenting_tools import gamma_augmentation, poisson_noise
 
 from skimage.feature import hog
 from skimage import color
@@ -160,14 +160,12 @@ def generator_with_feature_extraction(path,
 
 
 def random_preprocessing(img):
-    if random.random() < 0.25:
-        img = flip_axis(img, 1)
-    if random.random() < 0.25:
-        img = random_rotation(img, random.uniform(-5, 5), 0, 1, 2, fill_mode='wrap')
-    if random.random() < 0.25:
-        img = gamma_augmentation(img)
-    # if random.random() < 0.5:
-    #     img = perlin_noise(img)
+    img = flip_axis(img, 1)
+    img = random_rotation(img, random.uniform(-10, 10), 0, 1, 2)
+    img = random_zoom(img, (1.0, 1.5))
+    img = random_shift(img, 0.2, 0.2)
+    img = gamma_augmentation(img)
+    img = poisson_noise(img)
     logger.log_img(img)
     return img
 
