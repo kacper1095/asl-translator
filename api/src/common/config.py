@@ -64,7 +64,7 @@ class TrainingConfig(object):
     optimizer = 'sgd'
     available_optimizers = {
         'sgd': SGD(lr=INITIAL_LEARNING_RATE, decay=1e-6, momentum=0.9, nesterov=True),
-        'adam': Adam()
+        'adam': Adam(0.1)
     }
 
     loss = 'categorical_crossentropy'

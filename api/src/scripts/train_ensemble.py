@@ -18,7 +18,7 @@ def train(num_epochs, batch_size, input_size, M, alpha_zero, wrn_N, wrn_k, num_w
     if not Config.NO_SAVE:
         ensure_dir(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME))
     snapshot = SnapshotCallbackBuilder(num_epochs, M, os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME) , alpha_zero)
-    model = WRN.create_wide_residual_network(Config.INPUT_SHAPE, N=wrn_N, k=wrn_k, dropout=0.00)
+    model = WRN.create_wide_residual_network(Config.INPUT_SHAPE, N=wrn_N, k=wrn_k, dropout=0.4)
     model_prefix = 'wrn-%d-%d' % (wrn_N * 6 + 4, wrn_k)
 
     if not Config.NO_SAVE:

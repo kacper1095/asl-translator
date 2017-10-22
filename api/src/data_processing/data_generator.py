@@ -37,40 +37,6 @@ def prepare_image(img):
     return features
 
 
-def crop_area(im, max_tries=50):
-    """
-    make random crop from the input image
-    :param im:
-    :param max_tries:
-    :return:
-    """
-    h, w, _ = im.shape
-    pad_h = h // 10
-    pad_w = w // 10
-    h_array = np.zeros((h + pad_h * 2), dtype=np.int32)
-    w_array = np.zeros((w + pad_w * 2), dtype=np.int32)
-    # ensure the cropped area not across a text
-    h_axis = np.where(h_array == 0)[0]
-    w_axis = np.where(w_array == 0)[0]
-    if len(h_axis) == 0 or len(w_axis) == 0:
-        return im
-    for i in range(max_tries):
-        xx = np.random.choice(w_axis, size=2)
-        xmin = np.min(xx) - pad_w
-        xmax = np.max(xx) - pad_w
-        xmin = np.clip(xmin, 0, w - 1)
-        xmax = np.clip(xmax, 0, w - 1)
-        yy = np.random.choice(h_axis, size=2)
-        ymin = np.min(yy) - pad_h
-        ymax = np.max(yy) - pad_h
-        ymin = np.clip(ymin, 0, h - 1)
-        ymax = np.clip(ymax, 0, h - 1)
-        im = im[ymin:ymax + 1, xmin:xmax + 1, :]
-        return im
-
-    return im
-
-
 def generator(path,
               input_size=64,
               batch_size=32,
@@ -79,6 +45,7 @@ def generator(path,
     print('{} training images in {}'.format(
         image_list.shape[0], path))
     index = np.arange(0, image_list.shape[0])
+
     while True:
         images = []
         classes = []
@@ -160,10 +127,11 @@ def generator_with_feature_extraction(path,
 
 
 def random_preprocessing(img):
-    img = flip_axis(img, 1)
-    img = random_rotation(img, random.uniform(-10, 10), 0, 1, 2)
-    img = random_zoom(img, (1.0, 1.5))
-    img = random_shift(img, 0.2, 0.2)
+    if random.random() < 0.5:
+        img = flip_axis(img, 1)
+    img = random_rotation(img, random.uniform(-7.5, 7.5), 0, 1, 2)
+    img = random_zoom(img, (0.9, 1.25), 0, 1, 2)
+    img = random_shift(img, 0.1, 0.1, 0, 1, 2)
     # img = gamma_augmentation(img)
     img = poisson_noise(img)
     logger.log_img(img[..., ::-1])
