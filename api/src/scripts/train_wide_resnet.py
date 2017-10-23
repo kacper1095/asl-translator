@@ -18,7 +18,7 @@ def train(num_epochs, batch_size, input_size, num_workers):
     if not Config.NO_SAVE:
         ensure_dir(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME))
     # model = create_model(get_spatial_transformer())
-    model = create_wide_residual_network(Config.INPUT_SHAPE, N=2, k=4, dropout=0.4)
+    model = create_wide_residual_network(Config.INPUT_SHAPE, N=2, k=4, dropout=0.2)
     model.summary()
 
     callbacks = [
@@ -44,7 +44,7 @@ def train(num_epochs, batch_size, input_size, num_workers):
 
     model.fit_generator(data_generator_train, samples_per_epoch=data_generator_train.samples_per_epoch, nb_epoch=num_epochs,
                         validation_data=data_generator_valid, nb_val_samples=data_generator_valid.samples_per_epoch,
-                        callbacks=callbacks)
+                        callbacks=callbacks, class_weight=data_generator_train.get_class_weights)
 
 
 def main(args):

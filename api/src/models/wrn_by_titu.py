@@ -38,7 +38,7 @@ def conv1_block(input, k=1, dropout=0.0):
     x = BatchNormalization(axis=channel_axis)(x)
     x = Activation(Config.ACTIVATION)(x)
 
-    if dropout > 0.0: x = Dropout(dropout)(x)
+    if dropout > 0.0: x = SpatialDropout2D(dropout)(x)
 
     x = Convolution2D(16 * k, 3, 3, border_mode='same')(x)
     x = BatchNormalization(axis=channel_axis)(x)
@@ -64,7 +64,7 @@ def conv2_block(input, k=1, dropout=0.0):
     x = BatchNormalization(axis=channel_axis)(x)
     x = Activation(Config.ACTIVATION)(x)
 
-    if dropout > 0.0: x = Dropout(dropout)(x)
+    if dropout > 0.0: x = SpatialDropout2D(dropout)(x)
 
     x = Convolution2D(32 * k, 3, 3, border_mode='same')(x)
     x = BatchNormalization(axis=channel_axis)(x)
@@ -90,7 +90,7 @@ def conv3_block(input, k=1, dropout=0.0):
     x = BatchNormalization(axis=channel_axis)(x)
     x = Activation(Config.ACTIVATION)(x)
 
-    if dropout > 0.0: x = Dropout(dropout)(x)
+    if dropout > 0.0: x = SpatialDropout2D(dropout)(x)
 
     x = Convolution2D(64 * k, 3, 3, border_mode='same')(x)
     x = BatchNormalization(axis=channel_axis)(x)

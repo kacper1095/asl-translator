@@ -15,6 +15,8 @@ from ..keras_extensions.data_tools.augmenting_tools import gamma_augmentation, p
 
 from skimage.feature import hog
 from skimage import color
+from collections import defaultdict
+from sklearn.utils import class_weight
 
 
 def get_images(path):
@@ -167,6 +169,22 @@ class DataGenerator(object):
     @property
     def samples_per_epoch(self):
         return len(get_images(self.dir_path))
+
+    @property
+    def get_class_weights(self):
+        classes = []
+        for folder in os.listdir(self.dir_path):
+            if folder in ['z', 'j']:
+                continue
+            classes.extend(list(config.DataConfig.get_class(folder)) * len(os.listdir(os.path.join(self.dir_path, folder))))
+        class_weights = list(class_weight.compute_class_weight('balanced', np.unique(classes), classes))
+        class_weights.insert(config.DataConfig.get_class('z')[0], 1.0)
+        class_weights.insert(config.DataConfig.get_class('j')[0], 1.0)
+        dict_weights = {}
+        for i, v in enumerate(class_weights):
+            dict_weights[i] = v
+        return dict_weights
+
 
 
 if __name__ == '__main__':
