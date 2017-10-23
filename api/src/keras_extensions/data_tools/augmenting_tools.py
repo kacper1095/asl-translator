@@ -87,7 +87,7 @@ def elastic_transform(image, alpha=0.15, sigma=0.08, alpha_affine=0.08, random_s
 
 
 def gamma_augmentation(x):
-    z_value = np.random.uniform(-0.3, 0.3)
+    z_value = np.random.uniform(-0.3, 0.25)
     nominator = np.log(0.5 + 2 ** (-0.5) * z_value)
     denominator = np.log(0.5 - 2 ** (-0.5) * z_value)
     gamma_value = nominator / (denominator + EPSILON)
@@ -98,6 +98,7 @@ def poisson_noise(x):
     peak = np.random.uniform(0.7, 1.0)
     noisy = np.random.poisson(x * 255.0 * peak) / peak / 255.0
     return noisy
+
 
 
 def random_shift(x, wrg, hrg, row_axis=1, col_axis=2, channel_axis=0,

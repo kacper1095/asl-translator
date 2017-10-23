@@ -37,7 +37,7 @@ class Config(object):
 class TrainingConfig(object):
     from keras.optimizers import SGD, Adam
 
-    NB_EPOCHS = 100
+    NB_EPOCHS = 30
     NUM_WORKERS = 4
     BATCH_SIZE = 32
     TRAINING_PHASE = 1
@@ -45,7 +45,7 @@ class TrainingConfig(object):
     INITIAL_LEARNING_RATE = 0.03
     SVM_WEIGHT_REGULARIZER = 0.01
 
-    lr_schedule = [12, 18, 24]  # epoch_step
+    lr_schedule = [10, 15, 20]  # epoch_step
 
     PATHS = {
         'MODELS': os.path.join('api', 'models')
@@ -64,7 +64,7 @@ class TrainingConfig(object):
     optimizer = 'sgd'
     available_optimizers = {
         'sgd': SGD(lr=INITIAL_LEARNING_RATE, decay=1e-6, momentum=0.9, nesterov=True),
-        'adam': Adam(0.1)
+        'adam': Adam(INITIAL_LEARNING_RATE)
     }
 
     loss = 'categorical_crossentropy'
@@ -102,7 +102,7 @@ class DataConfig(object):
     }
 
     # AVAILABLE_CHARS = string.digits + string.ascii_lowercase
-    AVAILABLE_CHARS = string.ascii_lowercase
+    AVAILABLE_CHARS = 'abcdefghiklmnopqrstuvwxy'
     CLASS_ENCODER = LabelEncoder()
     CLASS_ENCODER.fit(list(AVAILABLE_CHARS))
 

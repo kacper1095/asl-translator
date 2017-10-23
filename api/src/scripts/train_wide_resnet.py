@@ -26,7 +26,7 @@ def train(num_epochs, batch_size, input_size, num_workers):
         CSVLogger(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'history.csv')),
         # TensorBoard(log_dir=os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'tensorboard')),
         # LearningRateScheduler(TrainingConfig.schedule),
-        EarlyStopping(patience=12)
+        EarlyStopping(patience=3)
     ] if not Config.NO_SAVE else []
 
     if not Config.NO_SAVE:

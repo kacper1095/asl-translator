@@ -6,22 +6,51 @@ import os
 import csv
 import numpy as np
 import matplotlib
+import sys
+import tqdm
+from io import StringIO
 matplotlib.use('Agg')
 
 import matplotlib.pyplot as plt
+
+from keras.models import load_model
 
 REQUIRED_COLUMNS = ['categorical_accuracy', 'epoch', 'loss', 'val_categorical_accuracy', 'val_loss']
 OPTIONAL_COLUMNS = ['f1', 'val_f1']
 
 
 def plot():
-    for history_file in list_training_folders():
+    for history_file in tqdm.tqdm(list_training_folders()):
         with open(history_file) as f:
             plot_csv_file(csv.reader(f), history_file)
+    for weight in tqdm.tqdm(list_model_folders()):
+        try:
+            save_model_summary(weight)
+        except ValueError as e:
+            print(e)
 
+
+def save_model_summary(model_path):
+    model = load_model(model_path, custom_objects={'f1': lambda x, y: x})
+    orig_stdout = sys.stdout
+    output_buf = StringIO()
+    sys.stdout = output_buf
+
+    model.summary()
+    sys.stdout = orig_stdout
+    description = output_buf.getvalue()
+
+    path = os.path.dirname(model_path)
+    filename = os.path.basename(model_path).split('.')[0] + '.txt'
+    with open(os.path.join(path, filename), 'w') as f:
+        f.write(description)
 
 def list_training_folders():
     return glob.glob(os.path.join(TrainingConfig.PATHS['MODELS'], '**', '*.csv'))
+
+
+def list_model_folders():
+    return glob.glob(os.path.join(TrainingConfig.PATHS['MODELS'], '**', '*.h5'))
 
 
 def plot_csv_file(reader, path):

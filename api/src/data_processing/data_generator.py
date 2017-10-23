@@ -12,6 +12,7 @@ from ..common import config
 from ..common.logger import logger
 from keras.preprocessing.image import flip_axis, random_rotation, random_shift, random_zoom
 from ..keras_extensions.data_tools.augmenting_tools import gamma_augmentation, poisson_noise
+from scipy.ndimage.filters import gaussian_filter
 
 from skimage.feature import hog
 from skimage import color
@@ -132,9 +133,10 @@ def random_preprocessing(img):
     if random.random() < 0.5:
         img = flip_axis(img, 1)
     img = random_rotation(img, random.uniform(-7.5, 7.5), 0, 1, 2)
-    img = random_zoom(img, (0.9, 1.25), 0, 1, 2)
-    img = random_shift(img, 0.1, 0.1, 0, 1, 2)
-    # img = gamma_augmentation(img)
+    img = random_zoom(img, (0.75, 1.25), 0, 1, 2)
+    img = random_shift(img, 0.2, 0.2, 0, 1, 2)
+    img = gamma_augmentation(img)
+    img = gaussian_filter(img, sigma=[random.uniform(0.0, 1.2), random.uniform(0.0, 1.2),random.uniform(0.0, 0.2)])
     img = poisson_noise(img)
     logger.log_img(img[..., ::-1])
     return img
@@ -174,12 +176,8 @@ class DataGenerator(object):
     def get_class_weights(self):
         classes = []
         for folder in os.listdir(self.dir_path):
-            if folder in ['z', 'j']:
-                continue
             classes.extend(list(config.DataConfig.get_class(folder)) * len(os.listdir(os.path.join(self.dir_path, folder))))
         class_weights = list(class_weight.compute_class_weight('balanced', np.unique(classes), classes))
-        class_weights.insert(config.DataConfig.get_class('z')[0], 1.0)
-        class_weights.insert(config.DataConfig.get_class('j')[0], 1.0)
         dict_weights = {}
         for i, v in enumerate(class_weights):
             dict_weights[i] = v
