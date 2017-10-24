@@ -87,7 +87,7 @@ def elastic_transform(image, alpha=0.15, sigma=0.08, alpha_affine=0.08, random_s
 
 
 def gamma_augmentation(x):
-    z_value = np.random.uniform(-0.3, 0.25)
+    z_value = np.random.uniform(-0.15, 0.15)
     nominator = np.log(0.5 + 2 ** (-0.5) * z_value)
     denominator = np.log(0.5 - 2 ** (-0.5) * z_value)
     gamma_value = nominator / (denominator + EPSILON)
@@ -95,10 +95,27 @@ def gamma_augmentation(x):
 
 
 def poisson_noise(x):
-    peak = np.random.uniform(0.7, 1.0)
+    peak = np.random.uniform(0.9, 1.1)
     noisy = np.random.poisson(x * 255.0 * peak) / peak / 255.0
     return noisy
 
+
+def brightness_change(x):
+    x = cv2.cvtColor((x * 255).astype(np.float32), cv2.COLOR_BGR2HSV)
+    random_bright = .5 + np.random.random()
+    x[:, :, 2] *= random_bright
+    x[:, :, 2] = np.clip(x[:, :, 2], 0, 255)
+    x = cv2.cvtColor(x, cv2.COLOR_HSV2BGR)
+    return x / 255.
+
+
+def hue_change(x):
+    x = cv2.cvtColor((x * 255).astype(np.float32), cv2.COLOR_BGR2HSV)
+    random_hue = np.random.uniform(0, 180)
+    x[:, :, 0] = random_hue
+    x[:, :, 0] = np.clip(x[:, :, 0], 0, 180)
+    x = cv2.cvtColor(x, cv2.COLOR_HSV2BGR)
+    return x / 255.
 
 
 def random_shift(x, wrg, hrg, row_axis=1, col_axis=2, channel_axis=0,
