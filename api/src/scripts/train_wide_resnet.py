@@ -18,7 +18,8 @@ def train(num_epochs, batch_size, input_size, num_workers):
     if not Config.NO_SAVE:
         ensure_dir(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME))
     # model = create_model(get_spatial_transformer())
-    model = create_wide_residual_network(Config.INPUT_SHAPE, N=2, k=4, dropout=0.6)
+    model = create_wide_residual_network(Config.INPUT_SHAPE, N=2, k=8, dropout=0.4,
+                                         path_weights=os.path.join(DataConfig.PATHS['PRETRAINED_MODEL_FOLDER'], 'WRN-16-8 Weights.h5'))
     model.summary()
 
     callbacks = [

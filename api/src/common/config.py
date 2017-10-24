@@ -37,7 +37,7 @@ class Config(object):
 class TrainingConfig(object):
     from keras.optimizers import SGD, Adam
 
-    NB_EPOCHS = 30
+    NB_EPOCHS = 100
     NUM_WORKERS = 4
     BATCH_SIZE = 32
     TRAINING_PHASE = 1
@@ -45,7 +45,7 @@ class TrainingConfig(object):
     INITIAL_LEARNING_RATE = 0.03
     SVM_WEIGHT_REGULARIZER = 0.01
 
-    lr_schedule = [10, 15, 20]  # epoch_step
+    lr_schedule = [20, 40, 60]  # epoch_step
 
     PATHS = {
         'MODELS': os.path.join('api', 'models')
@@ -98,7 +98,8 @@ class DataConfig(object):
         'VALID_PROCESSED_DATA': os.path.join('data', 'processed', 'valid'),
         'LOG_DATA_IMAGES': os.path.join('data', 'logger', 'images'),
         'LOG_DATA_TEXT': os.path.join('data', 'logger', 'text'),
-        'RANDOM_BACKGROUNDS_FOLDER': os.path.join('data', 'raw', 'random_backgrounds')
+        'RANDOM_BACKGROUNDS_FOLDER': os.path.join('data', 'raw', 'random_backgrounds'),
+        'PRETRAINED_MODEL_FOLDER': os.path.join('api', 'pretrained_models')
     }
 
     # AVAILABLE_CHARS = string.digits + string.ascii_lowercase

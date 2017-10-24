@@ -17,7 +17,6 @@ def initial_conv(input):
     x = BatchNormalization(axis=channel_axis)(x)
     x = Activation(Config.ACTIVATION)(x)
 
-
     return x
 
 
@@ -103,13 +102,13 @@ def conv3_block(input, k=1, dropout=0.0):
     return m
 
 
-def create_wide_residual_network(input_dim, N=2, k=1, dropout=0.0, verbose=1):
+def create_wide_residual_network(input_dim, N=2, k=1, dropout=0.0, verbose=1, path_weights=None, layer_to_stop_freezing='merge_2'):
     """
     Creates a Wide Residual Network with specified parameters
     :param input: Input Keras object
     :param nb_classes: Number of output classes
     :param N: Depth of the network. Compute N = (n - 4) / 6.
-              Example : For a depth of 16, n = 16, N = (16 - 4) / 6 = 2
+              Example : For a depth of 16, n = 16, N = (16 - 4) / 6 = 2r
               Example2: For a depth of 28, n = 28, N = (28 - 4) / 6 = 4
               Example3: For a depth of 40, n = 40, N = (40 - 4) / 6 = 6
     :param k: Width of the network.
@@ -138,11 +137,18 @@ def create_wide_residual_network(input_dim, N=2, k=1, dropout=0.0, verbose=1):
         x = conv3_block(x, k, dropout)
         nb_conv += 2
 
-    x = GlobalAveragePooling2D()(x)
+    x = AveragePooling2D((8, 8))(x)
+    x = Flatten()(x)
 
     x = Dense(DataConfig.get_number_of_classes(), activation='softmax')(x)
 
     model = Model(ip, x)
+    if path_weights is not None:
+        model.load_weights(path_weights)
+        for layer in model.layers:
+            if layer.name == layer_to_stop_freezing:
+                break
+            layer.trainable = False
 
     if verbose: print("Wide Residual Network-%d-%d created." % (nb_conv, k))
     return model
