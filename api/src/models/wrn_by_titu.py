@@ -102,7 +102,7 @@ def conv3_block(input, k=1, dropout=0.0):
     return m
 
 
-def create_wide_residual_network(input_dim, N=2, k=1, dropout=0.0, verbose=1, path_weights=None, layer_to_stop_freezing='merge_2'):
+def create_wide_residual_network(input_dim, N=2, k=1, dropout=0.0, verbose=1, path_weights=None, layer_to_stop_freezing='merge_4'):
     """
     Creates a Wide Residual Network with specified parameters
     :param input: Input Keras object
@@ -140,11 +140,11 @@ def create_wide_residual_network(input_dim, N=2, k=1, dropout=0.0, verbose=1, pa
     x = AveragePooling2D((8, 8))(x)
     x = Flatten()(x)
 
-    x = Dense(DataConfig.get_number_of_classes(), activation='softmax')(x)
+    x = Dense(DataConfig.get_number_of_classes(), activation='softmax', name='classifier')(x)
 
     model = Model(ip, x)
     if path_weights is not None:
-        model.load_weights(path_weights)
+        model.load_weights(path_weights, by_name=True)
         for layer in model.layers:
             if layer.name == layer_to_stop_freezing:
                 break
@@ -153,13 +153,15 @@ def create_wide_residual_network(input_dim, N=2, k=1, dropout=0.0, verbose=1, pa
     if verbose: print("Wide Residual Network-%d-%d created." % (nb_conv, k))
     return model
 
+
 if __name__ == "__main__":
     from keras.layers import Input
     from keras.models import Model
 
     init = (3, 64, 64)
 
-    model = create_wide_residual_network(init, N=2, k=4, dropout=0.25)
+    model = create_wide_residual_network(init, N=2, k=8, dropout=0.25, path_weights=DataConfig.PATHS['PRETRAINED_MODEL_FOLDER'] + '/WRN-16-8 Weights.h5',
+                                         layer_to_stop_freezing='merge_4')
 
 
     model.summary()
