@@ -1,0 +1,576 @@
+asl-translator/api/__init__.py
+    LOC: 0
+    LLOC: 0
+    SLOC: 0
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 0
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+asl-translator/api/src/data_processing/data_to_dir_composer.py
+    LOC: 104
+    LLOC: 78
+    SLOC: 83
+    Comments: 1
+    Single comments: 1
+    Multi: 0
+    Blank: 20
+    - Comment Stats
+        (C % L): 1%
+        (C % S): 1%
+        (C + M % L): 1%
+asl-translator/api/src/data_processing/data_analyze.py
+    LOC: 28
+    LLOC: 19
+    SLOC: 20
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 8
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+asl-translator/api/src/data_processing/download_random_backgrounds.py
+    LOC: 158
+    LLOC: 114
+    SLOC: 115
+    Comments: 21
+    Single comments: 10
+    Multi: 3
+    Blank: 30
+    - Comment Stats
+        (C % L): 13%
+        (C % S): 18%
+        (C + M % L): 15%
+asl-translator/api/src/data_processing/green_edge_cutter.py
+    LOC: 51
+    LLOC: 40
+    SLOC: 38
+    Comments: 1
+    Single comments: 1
+    Multi: 0
+    Blank: 12
+    - Comment Stats
+        (C % L): 2%
+        (C % S): 3%
+        (C + M % L): 2%
+asl-translator/api/src/data_processing/data_generator.py
+    LOC: 189
+    LLOC: 147
+    SLOC: 156
+    Comments: 2
+    Single comments: 2
+    Multi: 0
+    Blank: 31
+    - Comment Stats
+        (C % L): 1%
+        (C % S): 1%
+        (C + M % L): 1%
+asl-translator/api/src/data_processing/__init__.py
+    LOC: 0
+    LLOC: 0
+    SLOC: 0
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 0
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+asl-translator/api/src/data_processing/generator_enqueuer.py
+    LOC: 129
+    LLOC: 75
+    SLOC: 78
+    Comments: 2
+    Single comments: 2
+    Multi: 29
+    Blank: 20
+    - Comment Stats
+        (C % L): 2%
+        (C % S): 3%
+        (C + M % L): 24%
+asl-translator/api/src/scripts/train_simple_network.py
+    LOC: 59
+    LLOC: 37
+    SLOC: 45
+    Comments: 1
+    Single comments: 0
+    Multi: 0
+    Blank: 14
+    - Comment Stats
+        (C % L): 2%
+        (C % S): 2%
+        (C + M % L): 2%
+asl-translator/api/src/scripts/train_ensemble.py
+    LOC: 64
+    LLOC: 44
+    SLOC: 48
+    Comments: 1
+    Single comments: 1
+    Multi: 0
+    Blank: 15
+    - Comment Stats
+        (C % L): 2%
+        (C % S): 2%
+        (C + M % L): 2%
+asl-translator/api/src/scripts/train_pretrained_vgg16.py
+    LOC: 63
+    LLOC: 40
+    SLOC: 48
+    Comments: 1
+    Single comments: 0
+    Multi: 0
+    Blank: 15
+    - Comment Stats
+        (C % L): 2%
+        (C % S): 2%
+        (C + M % L): 2%
+asl-translator/api/src/scripts/train_wide_resnet.py
+    LOC: 65
+    LLOC: 40
+    SLOC: 50
+    Comments: 3
+    Single comments: 1
+    Multi: 0
+    Blank: 14
+    - Comment Stats
+        (C % L): 5%
+        (C % S): 6%
+        (C + M % L): 5%
+asl-translator/api/src/scripts/plot_trainings.py
+    LOC: 116
+    LLOC: 95
+    SLOC: 94
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 22
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+asl-translator/api/src/scripts/train_3_convo.py
+    LOC: 61
+    LLOC: 38
+    SLOC: 46
+    Comments: 2
+    Single comments: 1
+    Multi: 0
+    Blank: 14
+    - Comment Stats
+        (C % L): 3%
+        (C % S): 4%
+        (C + M % L): 3%
+asl-translator/api/src/scripts/train_inception.py
+    LOC: 62
+    LLOC: 40
+    SLOC: 48
+    Comments: 1
+    Single comments: 0
+    Multi: 0
+    Blank: 14
+    - Comment Stats
+        (C % L): 2%
+        (C % S): 2%
+        (C + M % L): 2%
+asl-translator/api/src/scripts/__init__.py
+    LOC: 0
+    LLOC: 0
+    SLOC: 0
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 0
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+asl-translator/api/src/scripts/train_experimental.py
+    LOC: 61
+    LLOC: 37
+    SLOC: 45
+    Comments: 3
+    Single comments: 2
+    Multi: 0
+    Blank: 14
+    - Comment Stats
+        (C % L): 5%
+        (C % S): 7%
+        (C + M % L): 5%
+asl-translator/api/src/scripts/train_svm.py
+    LOC: 66
+    LLOC: 40
+    SLOC: 51
+    Comments: 3
+    Single comments: 1
+    Multi: 0
+    Blank: 14
+    - Comment Stats
+        (C % L): 5%
+        (C % S): 6%
+        (C + M % L): 5%
+asl-translator/api/src/scripts/train_pretrained_resnet50.py
+    LOC: 62
+    LLOC: 40
+    SLOC: 48
+    Comments: 1
+    Single comments: 0
+    Multi: 0
+    Blank: 14
+    - Comment Stats
+        (C % L): 2%
+        (C % S): 2%
+        (C + M % L): 2%
+asl-translator/api/src/scripts/train_svm_convo.py
+    LOC: 66
+    LLOC: 40
+    SLOC: 51
+    Comments: 3
+    Single comments: 1
+    Multi: 0
+    Blank: 14
+    - Comment Stats
+        (C % L): 5%
+        (C % S): 6%
+        (C + M % L): 5%
+asl-translator/api/src/scripts/train_mobile_net.py
+    LOC: 63
+    LLOC: 40
+    SLOC: 48
+    Comments: 2
+    Single comments: 1
+    Multi: 0
+    Blank: 14
+    - Comment Stats
+        (C % L): 3%
+        (C % S): 4%
+        (C + M % L): 3%
+asl-translator/api/src/common/config.py
+    LOC: 141
+    LLOC: 83
+    SLOC: 116
+    Comments: 3
+    Single comments: 2
+    Multi: 0
+    Blank: 23
+    - Comment Stats
+        (C % L): 2%
+        (C % S): 3%
+        (C + M % L): 2%
+asl-translator/api/src/common/__init__.py
+    LOC: 0
+    LLOC: 0
+    SLOC: 0
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 0
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+asl-translator/api/src/common/logger.py
+    LOC: 50
+    LLOC: 39
+    SLOC: 38
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 12
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+asl-translator/api/src/common/utils.py
+    LOC: 10
+    LLOC: 6
+    SLOC: 6
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 4
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+asl-translator/api/src/common/initial_environment_config.py
+    LOC: 15
+    LLOC: 4
+    SLOC: 4
+    Comments: 6
+    Single comments: 6
+    Multi: 0
+    Blank: 5
+    - Comment Stats
+        (C % L): 40%
+        (C % S): 150%
+        (C + M % L): 40%
+asl-translator/api/src/keras_extensions/layers.py
+    LOC: 161
+    LLOC: 104
+    SLOC: 115
+    Comments: 1
+    Single comments: 0
+    Multi: 18
+    Blank: 28
+    - Comment Stats
+        (C % L): 1%
+        (C % S): 1%
+        (C + M % L): 12%
+asl-translator/api/src/keras_extensions/__init__.py
+    LOC: 0
+    LLOC: 0
+    SLOC: 0
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 0
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+asl-translator/api/src/keras_extensions/metrics.py
+    LOC: 60
+    LLOC: 25
+    SLOC: 25
+    Comments: 0
+    Single comments: 0
+    Multi: 20
+    Blank: 15
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 33%
+asl-translator/api/src/keras_extensions/data_tools/test_augmenting_tools.py
+    LOC: 65
+    LLOC: 45
+    SLOC: 45
+    Comments: 3
+    Single comments: 3
+    Multi: 0
+    Blank: 17
+    - Comment Stats
+        (C % L): 5%
+        (C % S): 7%
+        (C + M % L): 5%
+asl-translator/api/src/keras_extensions/data_tools/__init__.py
+    LOC: 0
+    LLOC: 0
+    SLOC: 0
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 0
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+asl-translator/api/src/keras_extensions/data_tools/metrics.py
+    LOC: 24
+    LLOC: 17
+    SLOC: 17
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 7
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+asl-translator/api/src/keras_extensions/data_tools/augmenting_tools.py
+    LOC: 193
+    LLOC: 103
+    SLOC: 115
+    Comments: 2
+    Single comments: 1
+    Multi: 40
+    Blank: 37
+    - Comment Stats
+        (C % L): 1%
+        (C % S): 2%
+        (C + M % L): 22%
+asl-translator/api/src/keras_extensions/data_tools/perlin_noise.py
+    LOC: 129
+    LLOC: 91
+    SLOC: 102
+    Comments: 5
+    Single comments: 5
+    Multi: 0
+    Blank: 22
+    - Comment Stats
+        (C % L): 4%
+        (C % S): 5%
+        (C + M % L): 4%
+asl-translator/api/src/keras_extensions/data_tools/callbacks.py
+    LOC: 122
+    LLOC: 59
+    SLOC: 66
+    Comments: 2
+    Single comments: 1
+    Multi: 32
+    Blank: 23
+    - Comment Stats
+        (C % L): 2%
+        (C % S): 3%
+        (C + M % L): 28%
+asl-translator/api/src/models/dense.py
+    LOC: 23
+    LLOC: 17
+    SLOC: 16
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 7
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+asl-translator/api/src/models/svm.py
+    LOC: 17
+    LLOC: 10
+    SLOC: 11
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 6
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+asl-translator/api/src/models/svm_convo.py
+    LOC: 53
+    LLOC: 38
+    SLOC: 39
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 14
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+asl-translator/api/src/models/wide_resnet.py
+    LOC: 153
+    LLOC: 80
+    SLOC: 107
+    Comments: 28
+    Single comments: 14
+    Multi: 0
+    Blank: 32
+    - Comment Stats
+        (C % L): 18%
+        (C % S): 26%
+        (C + M % L): 18%
+asl-translator/api/src/models/localization_network.py
+    LOC: 44
+    LLOC: 29
+    SLOC: 34
+    Comments: 1
+    Single comments: 0
+    Multi: 0
+    Blank: 10
+    - Comment Stats
+        (C % L): 2%
+        (C % S): 3%
+        (C + M % L): 2%
+asl-translator/api/src/models/mobile_net.py
+    LOC: 54
+    LLOC: 39
+    SLOC: 42
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 12
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+asl-translator/api/src/models/wrn_by_titu.py
+    LOC: 170
+    LLOC: 107
+    SLOC: 104
+    Comments: 6
+    Single comments: 6
+    Multi: 16
+    Blank: 44
+    - Comment Stats
+        (C % L): 4%
+        (C % S): 6%
+        (C + M % L): 13%
+asl-translator/api/src/models/three_convo.py
+    LOC: 37
+    LLOC: 26
+    SLOC: 28
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 9
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+asl-translator/api/src/models/__init__.py
+    LOC: 0
+    LLOC: 0
+    SLOC: 0
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 0
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+asl-translator/api/src/models/experimental_network.py
+    LOC: 47
+    LLOC: 35
+    SLOC: 35
+    Comments: 2
+    Single comments: 2
+    Multi: 0
+    Blank: 10
+    - Comment Stats
+        (C % L): 4%
+        (C % S): 6%
+        (C + M % L): 4%
+asl-translator/api/src/models/inception.py
+    LOC: 179
+    LLOC: 109
+    SLOC: 109
+    Comments: 8
+    Single comments: 8
+    Multi: 5
+    Blank: 57
+    - Comment Stats
+        (C % L): 4%
+        (C % S): 7%
+        (C + M % L): 7%
+asl-translator/api/src/models/resnet50.py
+    LOC: 26
+    LLOC: 19
+    SLOC: 19
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 7
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+asl-translator/api/src/models/vgg16.py
+    LOC: 26
+    LLOC: 19
+    SLOC: 19
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 7
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%

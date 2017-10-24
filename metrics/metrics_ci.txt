@@ -1,0 +1,212 @@
+api/src/data_processing/data_to_dir_composer.py
+    F 21:0 parse_empslocal_dataset - B
+    F 44:0 parse_massey_data - B
+    F 83:0 clear_dirs - A
+    F 77:0 create_letter_dirs - A
+    F 96:0 main - A
+    F 91:0 parse_massey_file_name - A
+api/src/data_processing/data_analyze.py
+    F 8:0 analyze_class_counts - A
+    F 22:0 main - A
+api/src/data_processing/download_random_backgrounds.py
+    F 20:0 download_page - A
+    F 65:0 _images_get_all_items - A
+    F 50:0 _images_get_next_item - A
+api/src/data_processing/green_edge_cutter.py
+    F 10:0 process_img - A
+    F 28:0 blend_with_random_background - A
+api/src/data_processing/data_generator.py
+    F 43:0 generator - B
+    F 93:0 generator_with_feature_extraction - B
+    F 86:0 get_generator_for_svm - A
+    M 146:4 DataGenerator.__init__ - A
+    M 175:4 DataGenerator.get_class_weights - A
+    F 23:0 get_images - A
+    F 132:0 random_preprocessing - A
+    C 145:0 DataGenerator - A
+    M 163:4 DataGenerator.__next__ - A
+    F 31:0 get_class_from_path - A
+    F 36:0 prepare_image - A
+    M 160:4 DataGenerator.__iter__ - A
+    M 167:4 DataGenerator.number_of_steps - A
+    M 171:4 DataGenerator.samples_per_epoch - A
+api/src/data_processing/generator_enqueuer.py
+    M 89:4 GeneratorEnqueuer.stop - B
+    M 40:4 GeneratorEnqueuer.start - B
+    C 15:0 GeneratorEnqueuer - A
+    M 115:4 GeneratorEnqueuer.get - A
+    M 86:4 GeneratorEnqueuer.is_running - A
+    M 28:4 GeneratorEnqueuer.__init__ - A
+api/src/scripts/train_simple_network.py
+    F 17:0 train - A
+    F 46:0 main - A
+api/src/scripts/train_ensemble.py
+    F 17:0 train - A
+    F 42:0 main - A
+api/src/scripts/train_pretrained_vgg16.py
+    F 17:0 train - B
+    F 50:0 main - A
+api/src/scripts/train_wide_resnet.py
+    F 17:0 train - B
+    F 52:0 main - A
+api/src/scripts/plot_trainings.py
+    F 56:0 plot_csv_file - B
+    F 22:0 plot - A
+    F 96:0 plot_data - A
+    F 33:0 save_model_summary - A
+    F 48:0 list_training_folders - A
+    F 52:0 list_model_folders - A
+    F 111:0 write_to_file - A
+api/src/scripts/train_3_convo.py
+    F 17:0 train - A
+    F 48:0 main - A
+api/src/scripts/train_inception.py
+    F 17:0 train - B
+    F 49:0 main - A
+api/src/scripts/train_experimental.py
+    F 17:0 train - A
+    F 48:0 main - A
+api/src/scripts/train_svm.py
+    F 17:0 train - B
+    F 53:0 main - A
+api/src/scripts/train_pretrained_resnet50.py
+    F 17:0 train - B
+    F 49:0 main - A
+api/src/scripts/train_svm_convo.py
+    F 17:0 train - B
+    F 53:0 main - A
+api/src/scripts/train_mobile_net.py
+    F 17:0 train - B
+    F 50:0 main - A
+api/src/common/config.py
+    M 54:4 TrainingConfig.schedule - A
+    C 37:0 TrainingConfig - A
+    C 6:0 Config - A
+    M 24:4 Config.get_config - A
+    M 74:4 TrainingConfig.get_config - A
+    C 92:0 DataConfig - A
+    M 110:4 DataConfig.get_class - A
+    M 114:4 DataConfig.get_classes - A
+    M 118:4 DataConfig.get_one_hot - A
+    M 124:4 DataConfig.get_number_of_classes - A
+    M 128:4 DataConfig.get_config - A
+api/src/common/logger.py
+    M 19:4 Logger.log_img - A
+    M 28:4 Logger.log_txt - A
+    M 34:4 Logger.log - A
+    C 10:0 Logger - A
+    M 40:4 Logger.clear_files_if_necessary - A
+    M 12:4 Logger.__init__ - A
+    M 15:4 Logger.initialize_dirs - A
+    M 45:4 Logger.get_time_stamp - A
+api/src/common/utils.py
+    F 4:0 ensure_dir - A
+    F 9:0 print_info - A
+api/src/keras_extensions/layers.py
+    C 5:0 SpatialTransformer - A
+    M 25:4 SpatialTransformer.__init__ - A
+    M 31:4 SpatialTransformer.build - A
+    M 35:4 SpatialTransformer.compute_output_shape - A
+    M 38:4 SpatialTransformer.call - A
+    M 43:4 SpatialTransformer._repeat - A
+    M 49:4 SpatialTransformer._interpolate - A
+    M 114:4 SpatialTransformer._meshgrid - A
+    M 124:4 SpatialTransformer._transform - A
+api/src/keras_extensions/metrics.py
+    F 4:0 precision - A
+    F 18:0 recall - A
+    F 32:0 f1 - A
+api/src/keras_extensions/data_tools/test_augmenting_tools.py
+    F 21:0 ensure_dirs - A
+    F 31:0 load_data - A
+    F 41:0 test_elastic - A
+    F 47:0 test_gamma - A
+    F 53:0 test_perlin - A
+    F 59:0 test_all - A
+    F 12:0 main - A
+api/src/keras_extensions/data_tools/metrics.py
+    F 4:0 fmeasure - A
+    F 13:0 precision - A
+    F 20:0 recall - A
+api/src/keras_extensions/data_tools/augmenting_tools.py
+    F 43:0 elastic_transform - A
+    F 148:0 random_zoom - A
+    F 136:0 apply_transform - A
+    F 20:0 get_augmenting_funcions - A
+    F 33:0 help - A
+    F 39:0 perlin_noise - A
+    F 89:0 gamma_augmentation - A
+    F 97:0 poisson_noise - A
+    F 104:0 random_shift - A
+    F 187:0 transform_matrix_offset_center - A
+api/src/keras_extensions/data_tools/perlin_noise.py
+    F 81:0 grad - C
+    F 23:0 generate_img - A
+    F 46:0 sum_of_perlins - A
+    F 56:0 perlin - A
+    F 77:0 fade - A
+    F 118:0 dot_grid_gradient - A
+    F 126:0 linear_interpolation - A
+api/src/keras_extensions/data_tools/callbacks.py
+    M 71:4 SnapshotModelCheckpoint.on_epoch_end - A
+    C 53:0 SnapshotModelCheckpoint - A
+    C 13:0 PlotCallback - A
+    M 18:4 PlotCallback.__init__ - A
+    M 28:4 PlotCallback.on_train_begin - A
+    M 32:4 PlotCallback.on_batch_end - A
+    M 37:4 PlotCallback.on_epoch_end - A
+    M 42:4 PlotCallback.save_plot - A
+    M 65:4 SnapshotModelCheckpoint.__init__ - A
+    C 78:0 SnapshotCallbackBuilder - A
+    M 85:4 SnapshotCallbackBuilder.__init__ - A
+    M 98:4 SnapshotCallbackBuilder.get_callbacks - A
+    M 118:4 SnapshotCallbackBuilder._cosine_anneal_schedule - A
+api/src/models/dense.py
+    F 17:0 create_model - A
+    F 12:0 gaussian_radial_basis_function - A
+api/src/models/svm.py
+    F 10:0 create_model - A
+api/src/models/svm_convo.py
+    F 34:0 create_model - A
+    F 12:0 convo_block - A
+    F 18:0 residual_block - A
+    F 25:0 subsampling_block - A
+api/src/models/wide_resnet.py
+    F 25:0 schedule - A
+    F 107:0 create_model - A
+    F 40:0 _wide_basic - A
+    F 97:0 _layer - A
+api/src/models/localization_network.py
+    F 8:0 bn_convo - A
+    F 22:0 create_localization_net - A
+    F 39:0 get_spatial_transformer - A
+api/src/models/mobile_net.py
+    F 6:0 convo_block - A
+    F 14:0 almost_depthwise_block - A
+    F 27:0 create_model - A
+api/src/models/wrn_by_titu.py
+    F 105:0 create_wide_residual_network - B
+    F 23:0 conv1_block - B
+    F 50:0 conv2_block - B
+    F 77:0 conv3_block - B
+    F 14:0 initial_conv - A
+api/src/models/three_convo.py
+    F 16:0 create_model - A
+    F 6:0 bn_convo - A
+api/src/models/experimental_network.py
+    F 21:0 create_model - A
+    F 13:0 max_block - A
+    F 6:0 bn_block - A
+api/src/models/inception.py
+    F 134:0 create_model - A
+    F 13:0 conv_block - A
+    F 20:0 inception_stem - A
+    F 47:0 inception_A - A
+    F 64:0 inception_B - A
+    F 84:0 inception_C - A
+    F 106:0 reduction_A - A
+    F 119:0 reduction_B - A
+api/src/models/resnet50.py
+    F 9:0 create_model - A
+api/src/models/vgg16.py
+    F 9:0 create_model - A
