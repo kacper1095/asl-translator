@@ -10,11 +10,12 @@ import sys
 import time
 
 RANDOM_BACKGROUNDS_FOLDER = DataConfig.PATHS['RANDOM_BACKGROUNDS_FOLDER']
-search_keyword  = ['cosmos', 'buildings', 'computer', 'landscape', 'people',
-           'machinery']
+search_keyword = ['cosmos', 'buildings', 'computer', 'landscape', 'people',
+                  'machinery']
 keywords = ['']
 
 ensure_dir(RANDOM_BACKGROUNDS_FOLDER)
+
 
 # Downloading entire Web Document (Raw Page Content)
 def download_page(url):
@@ -25,7 +26,8 @@ def download_page(url):
         try:
             headers = {}
             headers[
-                'User-Agent'] = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36"
+                'User-Agent'] = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) " \
+                                "Chrome/41.0.2228.0 Safari/537.36 "
             req = urllib.request.Request(url, headers=headers)
             resp = urllib.request.urlopen(req)
             respData = str(resp.read())
@@ -37,7 +39,8 @@ def download_page(url):
         try:
             headers = {}
             headers[
-                'User-Agent'] = "Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.17 (KHTML, like Gecko) Chrome/24.0.1312.27 Safari/537.17"
+                'User-Agent'] = "Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.17 (KHTML, like Gecko) " \
+                                "Chrome/24.0.1312.27 Safari/537.17 "
             req = urllib2.Request(url, headers=headers)
             response = urllib2.urlopen(req)
             page = response.read()
@@ -102,27 +105,29 @@ while i < len(search_keyword):
     print("Total Image Links = " + str(len(items)))
     print("\n")
 
-    # This allows you to write all the links into a test file. This text file will be created in the same directory as your code. You can comment out the below 3 lines to stop writing the output to the text file.
+    # This allows you to write all the links into a test file. This text file will be created in the same directory
+    # as your code. You can comment out the below 3 lines to stop writing the output to the text file.
     t1 = time.time()  # stop the timer
     total_time = t1 - t0  # Calculating the total time required to crawl, find and download all the links of 60,000 images
     print("Total time taken: " + str(total_time) + " Seconds")
     print("Starting Download...")
 
-    ## To save imges to the same directory
+    # To save imges to the same directory
     # IN this saving process we are just skipping the URL if there is any error
 
     k = 0
     errorCount = 0
-    while (k < len(items[:10])):
+    while k < len(items[:10]):
         from urllib.request import urlopen, Request
         from urllib.error import URLError, HTTPError
 
         try:
             req = Request(items[k], headers={
-                "User-Agent": "Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.17 (KHTML, like Gecko) Chrome/24.0.1312.27 Safari/537.17"})
+                "User-Agent": "Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.17 (KHTML, like Gecko) "
+                              "Chrome/24.0.1312.27 Safari/537.17"})
             response = urlopen(req, None, 15)
             num_of_images = len(os.listdir(RANDOM_BACKGROUNDS_FOLDER))
-            output_file = open(os.path.join(RANDOM_BACKGROUNDS_FOLDER,str(num_of_images + 1) + ".jpg"), 'wb')
+            output_file = open(os.path.join(RANDOM_BACKGROUNDS_FOLDER, str(num_of_images + 1) + ".jpg"), 'wb')
 
             data = response.read()
             output_file.write(data)
@@ -136,23 +141,21 @@ while i < len(search_keyword):
 
             errorCount += 1
             print("IOError on image " + str(k + 1))
-            k = k + 1;
+            k = k + 1
 
         except HTTPError as e:  # If there is any HTTPError
 
             errorCount += 1
             print("HTTPError" + str(k))
-            k = k + 1;
+            k = k + 1
         except URLError as e:
 
             errorCount += 1
             print("URLError " + str(k))
-            k = k + 1;
+            k = k + 1
 
     i = i + 1
 
 print("\n")
 print("Everything downloaded!")
 print("\n" + str(errorCount) + " ----> total Errors")
-
-

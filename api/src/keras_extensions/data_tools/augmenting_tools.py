@@ -6,14 +6,12 @@ import scipy.ndimage as ndi
 
 from scipy.ndimage.interpolation import map_coordinates
 from scipy.ndimage.filters import gaussian_filter
-from .perlin_noise import generate_img as generate_perlin_noise
 
 EPSILON = 1e-8
 
 SWITCHES = {
     0: 'elastic_transform',
     1: 'gamma_augmentation',
-    2: 'perlin_noise'
 }
 
 
@@ -33,11 +31,6 @@ def get_augmenting_funcions(names):
 def help():
     return "\nelastic_transform" \
            "\ngamma_augmentation" \
-           "\nperlin_noise"
-
-
-def perlin_noise(image):
-    return generate_perlin_noise(image)
 
 
 def elastic_transform(image, alpha=0.15, sigma=0.08, alpha_affine=0.08, random_state=None):
@@ -97,6 +90,7 @@ def gamma_augmentation(x):
 def poisson_noise(x):
     peak = np.random.uniform(0.9, 1.1)
     noisy = np.random.poisson(x * 255.0 * peak) / peak / 255.0
+    noisy = np.clip(noisy, 0.0, 1.0)
     return noisy
 
 
