@@ -22,7 +22,7 @@ from sklearn.utils import class_weight
 
 def get_images(path):
     files = []
-    for ext in ['jpg', 'png', 'jpeg', 'JPG']:
+    for ext in ['jpg', 'png', 'jpeg']:
         files.extend(glob.glob(
             os.path.join(path, '**', '*.{}'.format(ext))))
     return files
