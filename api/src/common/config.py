@@ -2,6 +2,8 @@ import os
 import string
 from api.src.keras_extensions.metrics import f1
 
+from keras.metrics import top_k_categorical_accuracy
+
 
 class Config(object):
     import keras.backend as K
@@ -68,7 +70,7 @@ class TrainingConfig(object):
     }
 
     loss = 'categorical_crossentropy'
-    metrics = ['categorical_accuracy', f1]
+    metrics = ['categorical_accuracy', f1, top_k_categorical_accuracy]
     callbacks_monitor = 'loss'
 
     @staticmethod
