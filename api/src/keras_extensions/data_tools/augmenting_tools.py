@@ -88,14 +88,14 @@ def gamma_augmentation(x):
 
 
 def poisson_noise(x):
-    peak = np.random.uniform(0.9, 1.1)
+    peak = np.random.uniform(0.95, 1.0)
     noisy = np.random.poisson(x * 255.0 * peak) / peak / 255.0
     noisy = np.clip(noisy, 0.0, 1.0)
     return noisy
 
 
 def brightness_change(x):
-    x = cv2.cvtColor((x * 255).astype(np.float32), cv2.COLOR_BGR2HSV)
+    x = cv2.cvtColor((x * 255).astype(np.float32), cv2.COLOR_RGB2HSV)
     random_bright = .5 + np.random.random()
     x[:, :, 2] *= random_bright
     x[:, :, 2] = np.clip(x[:, :, 2], 0, 255)
@@ -104,11 +104,11 @@ def brightness_change(x):
 
 
 def hue_change(x):
-    x = cv2.cvtColor((x * 255).astype(np.float32), cv2.COLOR_BGR2HSV)
-    random_hue = np.random.uniform(0, 180)
-    x[:, :, 0] = random_hue
-    x[:, :, 0] = np.clip(x[:, :, 0], 0, 180)
-    x = cv2.cvtColor(x, cv2.COLOR_HSV2BGR)
+    x = cv2.cvtColor((x * 255).astype(np.float32), cv2.COLOR_RGB2HSV)
+    random_hue = np.random.uniform(-5, 5)
+    x[:, :, 0] += random_hue
+    x[:, :, 0] = x[:, :, 0] % 360
+    x = cv2.cvtColor(x, cv2.COLOR_HSV2RGB)
     return x / 255.
 
 
