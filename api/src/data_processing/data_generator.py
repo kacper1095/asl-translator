@@ -189,6 +189,5 @@ class DataGenerator(object):
         return dict_weights
 
 
-
 if __name__ == '__main__':
     pass

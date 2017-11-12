@@ -31,10 +31,13 @@ def plot():
 
 
 def save_model_summary(model_path):
+    filename = os.path.basename(model_path).split('.')[0] + '.txt'
+    path = os.path.dirname(model_path)
+    if os.path.exists(os.path.join(path, filename)):
+        return 
+
     model = load_model(model_path, custom_objects={'f1': lambda x, y: x})
     description = get_description_string(model)
-    path = os.path.dirname(model_path)
-    filename = os.path.basename(model_path).split('.')[0] + '.txt'
     with open(os.path.join(path, filename), 'w') as f:
         f.write(description)
 
