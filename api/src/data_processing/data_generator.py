@@ -132,13 +132,13 @@ def generator_with_feature_extraction(path,
 def random_preprocessing(img):
     if random.random() < 0.5:
         img = flip_axis(img, 1)
-    img = random_rotation(img, random.uniform(-7.5, 7.5), 0, 1, 2)
+    img = random_rotation(img, 15, 0, 1, 2)
+
     img = random_zoom(img, (0.75, 1.25), 0, 1, 2)
     img = random_shift(img, 0.2, 0.2, 0, 1, 2)
     img = gamma_augmentation(img)
     img = gaussian_filter(img, sigma=[random.uniform(0.0, 1.2), random.uniform(0.0, 1.2),random.uniform(0.0, 0.2)])
     img = poisson_noise(img)
-    logger.log_img(img[..., ::-1])
     return img
 
 
