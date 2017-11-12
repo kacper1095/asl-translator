@@ -6,14 +6,12 @@ import scipy.ndimage as ndi
 
 from scipy.ndimage.interpolation import map_coordinates
 from scipy.ndimage.filters import gaussian_filter
-from .perlin_noise import generate_img as generate_perlin_noise
 
 EPSILON = 1e-8
 
 SWITCHES = {
     0: 'elastic_transform',
     1: 'gamma_augmentation',
-    2: 'perlin_noise'
 }
 
 
@@ -33,11 +31,6 @@ def get_augmenting_funcions(names):
 def help():
     return "\nelastic_transform" \
            "\ngamma_augmentation" \
-           "\nperlin_noise"
-
-
-def perlin_noise(image):
-    return generate_perlin_noise(image)
 
 
 def elastic_transform(image, alpha=0.15, sigma=0.08, alpha_affine=0.08, random_state=None):
@@ -87,7 +80,7 @@ def elastic_transform(image, alpha=0.15, sigma=0.08, alpha_affine=0.08, random_s
 
 
 def gamma_augmentation(x):
-    z_value = np.random.uniform(-0.3, 0.25)
+    z_value = np.random.uniform(-0.25, 0.25)
     nominator = np.log(0.5 + 2 ** (-0.5) * z_value)
     denominator = np.log(0.5 - 2 ** (-0.5) * z_value)
     gamma_value = nominator / (denominator + EPSILON)
@@ -95,10 +88,28 @@ def gamma_augmentation(x):
 
 
 def poisson_noise(x):
-    peak = np.random.uniform(0.7, 1.0)
+    peak = np.random.uniform(0.95, 1.0)
     noisy = np.random.poisson(x * 255.0 * peak) / peak / 255.0
+    noisy = np.clip(noisy, 0.0, 1.0)
     return noisy
 
+
+def brightness_change(x):
+    x = cv2.cvtColor((x * 255).astype(np.float32), cv2.COLOR_RGB2HSV)
+    random_bright = .5 + np.random.random()
+    x[:, :, 2] *= random_bright
+    x[:, :, 2] = np.clip(x[:, :, 2], 0, 255)
+    x = cv2.cvtColor(x, cv2.COLOR_HSV2BGR)
+    return x / 255.
+
+
+def hue_change(x):
+    x = cv2.cvtColor((x * 255).astype(np.float32), cv2.COLOR_RGB2HSV)
+    random_hue = np.random.uniform(-5, 5)
+    x[:, :, 0] += random_hue
+    x[:, :, 0] = x[:, :, 0] % 360
+    x = cv2.cvtColor(x, cv2.COLOR_HSV2RGB)
+    return x / 255.
 
 
 def random_shift(x, wrg, hrg, row_axis=1, col_axis=2, channel_axis=0,

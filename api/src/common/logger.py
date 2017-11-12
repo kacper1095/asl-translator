@@ -2,6 +2,7 @@ import cv2
 import os
 import datetime
 import glob
+import numpy as np
 
 from .config import DataConfig, Config
 from .utils import ensure_dir
@@ -21,7 +22,7 @@ class Logger(object):
         if Config.LOGGING:
             self.clear_files_if_necessary()
             if img.max() < 127:
-                img = img[:]
+                img = np.copy(img)
                 img *= 255
             cv2.imwrite(os.path.join(DataConfig.PATHS['LOG_DATA_IMAGES'], self.get_time_stamp() + name + '.png'), img)
 

@@ -9,8 +9,8 @@ class Config(object):
     EPSILON = 1e-6
     ACTIVATION = 'relu'
     WEIGHT_INIT = 'he_normal'
-    LOGGING = False
-    NO_SAVE = False
+    LOGGING = True
+    NO_SAVE = True
 
     BACKEND = K.backend()
     # Keras specific
