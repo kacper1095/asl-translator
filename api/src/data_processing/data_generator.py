@@ -11,7 +11,7 @@ random.seed(0)
 from ..common import config
 from ..common.logger import logger
 from keras.preprocessing.image import flip_axis, random_rotation, random_shift, random_zoom
-from ..keras_extensions.data_tools.augmenting_tools import gamma_augmentation, poisson_noise
+from ..keras_extensions.data_tools.augmenting_tools import gamma_augmentation, poisson_noise, hue_change, brightness_change
 from scipy.ndimage.filters import gaussian_filter
 
 from skimage.feature import hog
@@ -22,7 +22,7 @@ from sklearn.utils import class_weight
 
 def get_images(path):
     files = []
-    for ext in ['jpg', 'png', 'jpeg', 'JPG']:
+    for ext in ['jpg', 'png', 'jpeg']:
         files.extend(glob.glob(
             os.path.join(path, '**', '*.{}'.format(ext))))
     return files
@@ -136,9 +136,14 @@ def random_preprocessing(img):
 
     img = random_zoom(img, (0.75, 1.25), 0, 1, 2)
     img = random_shift(img, 0.2, 0.2, 0, 1, 2)
-    img = gamma_augmentation(img)
-    img = gaussian_filter(img, sigma=[random.uniform(0.0, 1.2), random.uniform(0.0, 1.2),random.uniform(0.0, 0.2)])
+    # img = gaussian_filter(img, sigma=[random.uniform(0.0, 0.7), random.uniform(0.0, 0.7),random.uniform(0.0, 0.2)])
     img = poisson_noise(img)
+    # img = hue_change(img)
+    if random.random() < 0.5:
+        img = brightness_change(img)
+    else:
+        img = gamma_augmentation(img)
+    logger.log_img(img[..., ::-1])
     return img
 
 

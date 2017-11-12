@@ -9,12 +9,13 @@ from api.src.common.utils import ensure_dir, print_info
 from .green_edge_cutter import process_img
 
 
-AVAILABLE_CHARS = string.ascii_lowercase
-NUM_OF_CUT_BG_IMAGES_INSTANCES = 10
+AVAILABLE_CHARS = DataConfig.AVAILABLE_CHARS
+NUM_OF_CUT_BG_IMAGES_INSTANCES = 100
 
 PATHS = {
     'empslocal': os.path.join(DataConfig.PATHS['RAW_DATA'], 'empslocal', 'dataset5'),
-    'massey': os.path.join(DataConfig.PATHS['RAW_DATA'], 'massey', 'images')
+    'massey': os.path.join(DataConfig.PATHS['RAW_DATA'], 'massey', 'images'),
+    'handspeak': os.path.join(DataConfig.PATHS['RAW_DATA'], 'handspeak')
 }
 
 
@@ -68,9 +69,26 @@ def parse_massey_data():
 
     print_info('Processed massey')
 
+
+def parse_handspeak_data():
+    handspeak = PATHS['handspeak']
+    for file_name in tqdm.tqdm(os.listdir(handspeak)):
+        sign = file_name[:-4]
+        src_path = os.path.join(handspeak, file_name)
+        if sign.lower() not in AVAILABLE_CHARS:
+            continue
+        dst_folder = os.path.join(DataConfig.PATHS['TRAINING_PROCESSED_DATA'], sign.lower())
+        dst_path = os.path.join(dst_folder, str(len(os.listdir(dst_folder))) + '.png')
+        shutil.copy(src_path, dst_path)
+        for _ in range(NUM_OF_CUT_BG_IMAGES_INSTANCES):
+            dst_path = os.path.join(dst_folder, str(len(os.listdir(dst_folder))) + '.png')
+            process_img(src_path, dst_path)
+    print_info('Processed heandspeak')
+
 DATASET_FUNCTIONS = [
-    parse_empslocal_dataset,
-    parse_massey_data
+    # parse_empslocal_dataset,
+    # parse_massey_data,
+    parse_handspeak_data
 ]
 
 

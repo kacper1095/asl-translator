@@ -32,6 +32,14 @@ def plot():
 
 def save_model_summary(model_path):
     model = load_model(model_path, custom_objects={'f1': lambda x, y: x})
+    description = get_description_string(model)
+    path = os.path.dirname(model_path)
+    filename = os.path.basename(model_path).split('.')[0] + '.txt'
+    with open(os.path.join(path, filename), 'w') as f:
+        f.write(description)
+
+
+def get_description_string(model):
     orig_stdout = sys.stdout
     output_buf = StringIO()
     sys.stdout = output_buf
@@ -39,11 +47,7 @@ def save_model_summary(model_path):
     model.summary()
     sys.stdout = orig_stdout
     description = output_buf.getvalue()
-
-    path = os.path.dirname(model_path)
-    filename = os.path.basename(model_path).split('.')[0] + '.txt'
-    with open(os.path.join(path, filename), 'w') as f:
-        f.write(description)
+    return description
 
 def list_training_folders():
     return glob.glob(os.path.join(TrainingConfig.PATHS['MODELS'], '**', '*.csv'))

@@ -8,6 +8,7 @@ from ..models.wrn_by_titu import create_wide_residual_network
 from ..data_processing.data_generator import DataGenerator
 from ..common.config import TrainingConfig, DataConfig, Config
 from ..common.utils import print_info, ensure_dir
+from .plot_trainings import get_description_string
 
 from keras.callbacks import ModelCheckpoint, CSVLogger, TensorBoard, LearningRateScheduler, EarlyStopping
 
@@ -38,6 +39,9 @@ def train(num_epochs, batch_size, input_size, num_workers):
 
         with open(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'config.yml'), 'w') as f:
             yaml.dump(list([TrainingConfig.get_config(), Config.get_config(), DataConfig.get_config()]), f, default_flow_style=False)
+
+        with open(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'model.txt'), 'w') as f:
+            f.write(get_description_string(model))
 
     optimizer = TrainingConfig.optimizer
     data_generator_train = DataGenerator(DataConfig.PATHS['TRAINING_PROCESSED_DATA'], batch_size, input_size, False)
