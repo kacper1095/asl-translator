@@ -148,11 +148,11 @@ def random_preprocessing(img):
 
 
 class DataGenerator(object):
-    def __init__(self, dir_path, batch_size, input_size, valid, use_hog=False):
+    def __init__(self, dir_path, batch_size, input_size, valid, use_hog=False, without_preprocessing=False):
         self.dir_path = dir_path
         self.batch_size = batch_size
         self.input_size = input_size
-        self.training_phase = config.TrainingConfig.TESTING_PHASE if valid else config.TrainingConfig.TRAINING_PHASE
+        self.training_phase = config.TrainingConfig.TESTING_PHASE if valid or without_preprocessing else config.TrainingConfig.TRAINING_PHASE
 
         if use_hog:
             self.generator = generator_with_feature_extraction(dir_path, config.Config.IMAGE_SIZE,

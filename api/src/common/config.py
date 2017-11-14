@@ -11,8 +11,8 @@ class Config(object):
     EPSILON = 1e-6
     ACTIVATION = 'relu'
     WEIGHT_INIT = 'he_normal'
-    LOGGING = True
-    NO_SAVE = True
+    LOGGING = False
+    NO_SAVE = False
 
     BACKEND = K.backend()
     # Keras specific
@@ -65,7 +65,7 @@ class TrainingConfig(object):
 
     optimizer = 'sgd'
     available_optimizers = {
-        'sgd': SGD(lr=INITIAL_LEARNING_RATE, decay=1e-6, momentum=0.9, nesterov=True),
+        'sgd': SGD(INITIAL_LEARNING_RATE, decay=1e-6, momentum=0.9, nesterov=True),
         'adam': Adam(INITIAL_LEARNING_RATE)
     }
 

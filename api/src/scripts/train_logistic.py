@@ -4,11 +4,10 @@ import datetime
 import yaml
 import api.src.common.initial_environment_config
 
-from ..models.wrn_by_titu import create_wide_residual_network
+from ..models.logistic import create_model
 from ..data_processing.data_generator import DataGenerator
 from ..common.config import TrainingConfig, DataConfig, Config
 from ..common.utils import print_info, ensure_dir
-from .plot_trainings import get_description_string
 
 from keras.callbacks import ModelCheckpoint, CSVLogger, TensorBoard, LearningRateScheduler, EarlyStopping
 
@@ -19,9 +18,7 @@ def train(num_epochs, batch_size, input_size, num_workers):
     if not Config.NO_SAVE:
         ensure_dir(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME))
     # model = create_model(get_spatial_transformer())
-    model = create_wide_residual_network(Config.INPUT_SHAPE, N=2, k=8, dropout=0.5,
-                                         path_weights=os.path.join(DataConfig.PATHS['PRETRAINED_MODEL_FOLDER'], 'WRN-16-8 Weights.h5'),
-                                         layer_to_stop_freezing='merge_2')
+    model = create_model((2592,))
     model.summary()
 
     callbacks = [
@@ -40,19 +37,19 @@ def train(num_epochs, batch_size, input_size, num_workers):
         with open(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'config.yml'), 'w') as f:
             yaml.dump(list([TrainingConfig.get_config(), Config.get_config(), DataConfig.get_config()]), f, default_flow_style=False)
 
-        with open(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'model.txt'), 'w') as f:
-            f.write(get_description_string(model))
-
     optimizer = TrainingConfig.optimizer
-    data_generator_train = DataGenerator(DataConfig.PATHS['TRAINING_PROCESSED_DATA'], batch_size, input_size, False,
-                                         without_preprocessing=True)
-    data_generator_valid = DataGenerator(DataConfig.PATHS['VALID_PROCESSED_DATA'], batch_size, input_size, True,
-                                         without_preprocessing=True)
-    model.compile(TrainingConfig.available_optimizers[optimizer], TrainingConfig.loss, metrics=TrainingConfig.metrics)
+    data_generator_train = DataGenerator(DataConfig.PATHS['TRAINING_PROCESSED_DATA'], batch_size, input_size,
+                                         valid=False, use_hog=True, without_preprocessing=True)
+    data_generator_valid = DataGenerator(DataConfig.PATHS['VALID_PROCESSED_DATA'], batch_size, input_size, valid=True,
+                                         use_hog=True, without_preprocessing=True)
+    model.compile(TrainingConfig.available_optimizers[optimizer], 'categorical_crossentropy', metrics=TrainingConfig.metrics)
 
-    model.fit_generator(data_generator_train, samples_per_epoch=data_generator_train.samples_per_epoch, nb_epoch=num_epochs,
-                        validation_data=data_generator_valid, nb_val_samples=data_generator_valid.samples_per_epoch,
-                        callbacks=callbacks, class_weight=data_generator_train.get_class_weights)
+    model.fit_generator(data_generator_train,
+                        samples_per_epoch=data_generator_train.samples_per_epoch,
+                        nb_epoch=num_epochs,
+                        validation_data=data_generator_valid,
+                        nb_val_samples=data_generator_valid.samples_per_epoch,
+                        callbacks=callbacks)
 
 
 def main(args):
