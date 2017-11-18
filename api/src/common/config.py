@@ -12,7 +12,7 @@ class Config(object):
     ACTIVATION = 'relu'
     WEIGHT_INIT = 'he_normal'
     LOGGING = False
-    NO_SAVE = True
+    NO_SAVE = False
 
     BACKEND = K.backend()
     # Keras specific
@@ -44,7 +44,7 @@ class TrainingConfig(object):
     BATCH_SIZE = 32
     TRAINING_PHASE = 1
     TESTING_PHASE = 0
-    INITIAL_LEARNING_RATE = 0.03
+    INITIAL_LEARNING_RATE = 0.001
     SVM_WEIGHT_REGULARIZER = 0.01
 
     lr_schedule = [20, 40, 60]  # epoch_step
@@ -63,14 +63,14 @@ class TrainingConfig(object):
             return TrainingConfig.INITIAL_LEARNING_RATE * 0.2 * 0.2
         return TrainingConfig.INITIAL_LEARNING_RATE * 0.2 * 0.2 * 0.2
 
-    optimizer = 'sgd'
+    optimizer = 'adam'
     available_optimizers = {
         'sgd': SGD(INITIAL_LEARNING_RATE, decay=1e-6, momentum=0.9, nesterov=True),
         'adam': Adam(INITIAL_LEARNING_RATE)
     }
 
     loss = 'categorical_crossentropy'
-    metrics = ['categorical_accuracy', f1, top_k_categorical_accuracy]
+    metrics = ['categorical_accuracy', f1]
     callbacks_monitor = 'loss'
 
     @staticmethod

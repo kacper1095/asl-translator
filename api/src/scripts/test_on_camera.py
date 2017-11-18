@@ -5,14 +5,16 @@ import numpy as np
 import pygame
 import pygame.camera as camera
 import matplotlib.pyplot as plt
+import keras.backend as K
 
 
 from keras.models import load_model
+from ..models.three_convo_change_detection import create_model
 
 all_letters = 'abcdefghiklmnopqrstuvwxy'
 
 
-def capture_camera(model, time_interval):
+def capture_camera(model, time_interval, model_position_change=None):
     pygame.init()
     camera.init()
     cam = camera.Camera('/dev/video0', (640, 480))
@@ -22,6 +24,7 @@ def capture_camera(model, time_interval):
     plt.ion()
     start = time.time()
     last_letter = ''
+    previous_frame = None
     while True:
         image = cam.get_image()
         image = np.array(pygame.surfarray.pixels3d(image))
@@ -36,13 +39,22 @@ def capture_camera(model, time_interval):
         p1 = (x, y)
         p2 = (w_window, h_window)
         cropped_window = crop_image(image, p1, p2)
+        cropped_window = np.array(cropped_window, dtype=np.float32) / 255.
+        cropped_window = cv2.resize(cropped_window, (64, 64))
+        cropped_window = cropped_window.transpose((2, 0, 1))
+        changed_position = False
+        if model_position_change is not None and previous_frame is not None:
+            changed_position = model_position_change.predict([np.array([previous_frame]), np.array([cropped_window])])[0]
+            changed_position = np.argmax(changed_position)
         if time.time() - start > time_interval:
             letter = classify_letter(model, cropped_window)
             last_letter = letter
             start = time.time()
+        previous_frame = cropped_window
         image = image.copy()
         cv2.rectangle(image, p1, p2, (0, 255, 0), 3)
         cv2.putText(image, last_letter, (int(0.8 * w), int(0.8 * h)), cv2.FONT_HERSHEY_PLAIN, 5, (0, 255, 0), thickness=6)
+        cv2.putText(image, 'Changed' if changed_position else 'Not changed', (int(0.1 * w), int(0.8 * h)), cv2.FONT_HERSHEY_PLAIN, 5, (0, 255, 0), thickness=6)
         im.set_data(image)
         plt.pause(0.01)
     cam.stop()
@@ -56,18 +68,24 @@ def crop_image(image, p1, p2):
 
 
 def classify_letter(model, cropped_window):
-    cropped_window = np.array(cropped_window, dtype=np.float32) / 255.
-    cropped_window = cv2.resize(cropped_window, (64, 64))
-    cropped_window = cropped_window.transpose((2, 0, 1))
     prediction = model.predict(np.array([cropped_window]))[0]
     letter_class = int(np.argmax(prediction))
     return all_letters[letter_class]
 
+def euclidean_distance(vects):
+    x, y = vects
+    return K.sqrt(K.maximum(K.sum(K.square(x - y), axis=1, keepdims=True), K.epsilon()))
+
+
+def eucl_dist_output_shape(shapes):
+    shape1, shape2 = shapes
+    return shape1[0], 1
 
 def parse_args():
     argparser = argparse.ArgumentParser('Script for testing model on camera')
     argparser.add_argument('model', help='H5 weights of keras model')
     argparser.add_argument('time', type=int, help='Interval between predictions')
+    argparser.add_argument('--position_change', default='', help='Test changing position')
     args = argparser.parse_args()
     return args
 
@@ -75,8 +93,12 @@ def parse_args():
 def main():
     args = parse_args()
     model = load_model(args.model, custom_objects={'f1': lambda x, y: y})
+    model_position_change = None
+    if args.position_change != '':
+        model_position_change = create_model()
+        model_position_change.load_weights(args.position_change)
     # model = args.model
-    capture_camera(model, args.time)
+    capture_camera(model, args.time, model_position_change)
 
 
 if __name__ == '__main__':

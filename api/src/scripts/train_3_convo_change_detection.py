@@ -6,8 +6,8 @@ import datetime
 import yaml
 import api.src.common.initial_environment_config
 
-from ..models.three_convo import create_model
-from ..data_processing.data_generator import DataGenerator
+from ..models.three_convo_change_detection import create_model
+from ..data_processing.change_pos_data_generator import DataGenerator
 from ..common.config import TrainingConfig, DataConfig, Config
 from ..common.utils import print_info, ensure_dir
 from .plot_trainings import get_description_string
