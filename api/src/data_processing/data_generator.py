@@ -68,6 +68,8 @@ def generator(path,
                 im = im[:, :, ::-1].astype(np.float32) / 255.
                 if phase == config.TrainingConfig.TRAINING_PHASE:
                     im = random_preprocessing(im)
+                im = cv2.cvtColor((im * 255).astype(np.uint8), cv2.COLOR_BGR2GRAY).astype(np.float32) / 255.
+                im = np.array([im]).transpose((1, 2, 0))
                 if K.backend() == 'tensorflow':
                     images.append(im)
                 else:
@@ -144,6 +146,7 @@ def random_preprocessing(img):
         img = brightness_change(img)
     else:
         img = gamma_augmentation(img)
+
     logger.log_img(img[..., ::-1])
     return img
 

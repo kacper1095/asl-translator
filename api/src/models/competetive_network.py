@@ -21,16 +21,16 @@ def big_block(x, nb_of_convos, nb_filters, use_dropout_and_pooling=True):
         x = competetive_block(x, nb_f, nb_convos)
     if use_dropout_and_pooling:
         x = MaxPooling2D((3, 3), (2, 2))(x)
-        x = Dropout(0.5)(x)
+        x = Dropout(0.2)(x)
     return x
 
 
 def create_model():
-    inp = Input(Config.INPUT_SHAPE)
-    x = bn_convo(inp, 7, 16, border_mode='valid', subsample=(2, 2))
-    x = big_block(x, [4, 2, 2], [192, 160, 96])
-    x = big_block(x, [4, 2, 2], [192, 192, 192])
-    x = big_block(x, [3, 2, 2], [192, 192, DataConfig.get_number_of_classes()], use_dropout_and_pooling=False)
+    inp = Input((1, 64, 64))
+    x = bn_convo(inp, 5, 16, border_mode='valid', subsample=(2, 2))
+    x = big_block(x, [4, 2, 2], [64, 48, 32])
+    x = big_block(x, [4, 2, 2], [64, 64, 64])
+    x = big_block(x, [3, 2, 2], [64, 64, DataConfig.get_number_of_classes()], use_dropout_and_pooling=False)
     x = GlobalAveragePooling2D()(x)
     x = Activation('softmax')(x)
 

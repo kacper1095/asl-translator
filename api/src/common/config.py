@@ -12,7 +12,7 @@ class Config(object):
     ACTIVATION = 'relu'
     WEIGHT_INIT = 'he_normal'
     LOGGING = False
-    NO_SAVE = False
+    NO_SAVE = True
 
     BACKEND = K.backend()
     # Keras specific

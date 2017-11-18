@@ -6,6 +6,7 @@ import api.src.common.initial_environment_config
 
 from ..models.competetive_network import create_model
 from ..data_processing.data_generator import DataGenerator
+from ..keras_extensions.callbacks import DifficultSamplesSaver
 from ..common.config import TrainingConfig, DataConfig, Config
 from ..common.utils import print_info, ensure_dir
 from .plot_trainings import get_description_string
@@ -17,7 +18,6 @@ RUNNING_TIME = datetime.datetime.now().strftime("%H_%M_%d_%m_%y")
 
 def train(num_epochs, batch_size, input_size, num_workers):
     ensure_dir(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME))
-    # model = create_model(get_spatial_transformer())
     model = create_model()
     model.summary()
 
@@ -26,7 +26,7 @@ def train(num_epochs, batch_size, input_size, num_workers):
         CSVLogger(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'history.csv')),
         # TensorBoard(log_dir=os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'tensorboard')),
         # LearningRateScheduler(TrainingConfig.schedule),
-        EarlyStopping(patience=12)
+        EarlyStopping(patience=12),
     ]if not Config.NO_SAVE else []
 
     if not Config.NO_SAVE:
@@ -46,7 +46,9 @@ def train(num_epochs, batch_size, input_size, num_workers):
 
     model.fit_generator(data_generator_train, samples_per_epoch=data_generator_train.samples_per_epoch, nb_epoch=num_epochs,
                         validation_data=data_generator_valid, nb_val_samples=data_generator_valid.samples_per_epoch,
-                        callbacks=callbacks)
+                        callbacks=callbacks
+                                 + [DifficultSamplesSaver(os.path.join('data', 'logger', 'difficult'), data_generator_valid)]
+                        )
 
 
 def main(args):
