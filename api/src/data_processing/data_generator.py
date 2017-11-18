@@ -114,8 +114,9 @@ def generator_with_feature_extraction(path,
                 resize_w = input_size
                 im = cv2.resize(im, dsize=(resize_w, resize_h))
                 new_h, new_w, _ = im.shape
+                im /= 255.
                 if phase == config.TrainingConfig.TRAINING_PHASE:
-                    im = random_preprocessing(im / 255.)
+                    im = random_preprocessing(im)
                 im = prepare_image(im * 255.)
                 images.append(im)
                 classes.append(config.DataConfig.get_one_hot(image_class))
