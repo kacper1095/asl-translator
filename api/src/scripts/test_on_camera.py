@@ -25,6 +25,7 @@ def capture_camera(model, time_interval, model_position_change=None):
     start = time.time()
     last_letter = ''
     previous_frame = None
+    previos_change = False
     while True:
         image = cam.get_image()
         image = np.array(pygame.surfarray.pixels3d(image))
@@ -46,15 +47,16 @@ def capture_camera(model, time_interval, model_position_change=None):
         if model_position_change is not None and previous_frame is not None:
             changed_position = model_position_change.predict([np.array([previous_frame]), np.array([cropped_window])])[0]
             changed_position = np.argmax(changed_position)
-        if time.time() - start > time_interval:
+        if previos_change and not changed_position:
             letter = classify_letter(model, cropped_window)
             last_letter = letter
             start = time.time()
         previous_frame = cropped_window
+        previos_change = changed_position
         image = image.copy()
         cv2.rectangle(image, p1, p2, (0, 255, 0), 3)
         cv2.putText(image, last_letter, (int(0.8 * w), int(0.8 * h)), cv2.FONT_HERSHEY_PLAIN, 5, (0, 255, 0), thickness=6)
-        cv2.putText(image, 'Changed' if changed_position else 'Not changed', (int(0.1 * w), int(0.8 * h)), cv2.FONT_HERSHEY_PLAIN, 5, (0, 255, 0), thickness=6)
+        # cv2.putText(image, 'Changed' if changed_position else 'Not changed', (int(0.1 * w), int(0.8 * h)), cv2.FONT_HERSHEY_PLAIN, 5, (0, 255, 0), thickness=6)
         im.set_data(image)
         plt.pause(0.01)
     cam.stop()
