@@ -20,7 +20,7 @@ def test():
     for weight_file in tqdm.tqdm(list_model_folders()):
         try:
             test_speed(weight_file)
-        except ValueError as e:
+        except Exception as e:
             print(e)
 
 
@@ -40,9 +40,9 @@ def test_speed(model_path):
 
 
 def get_speed_results(model):
-    text_lines = ['batch_size,time_mean,time_std']
+    text_lines = ['batch_size & time_mean & time_std \\\\']
     for batch_size in TESTING_BATCH_SIZES:
-        input_shape = (batch_size,) + model.input_shape[1:]
+        input_shape = (batch_size,) + tuple(model.input_shape[1:])
         times = []
         initiate_computational_graph_for(model, input_shape)
         for _ in range(NB_TRIES):
@@ -51,7 +51,7 @@ def get_speed_results(model):
             model.predict(x, batch_size)
             end = time.time()
             times.append(end - start)
-        text_lines.append('{},{},{}'.format(batch_size, np.mean(times), np.std(times)))
+        text_lines.append('{} & {} & {} \\\\'.format(batch_size, np.mean(times), np.std(times)))
     return '\n'.join(text_lines)
 
 

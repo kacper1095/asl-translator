@@ -17,7 +17,7 @@ def bn_convo(x, filters, kernel_size, use_dropout=False):
 
 def base_model():
     inputs = Input(Config.INPUT_SHAPE)
-    filters = [32, 64, 128, 128]
+    filters = [16, 32, 48, 48]
     repetitions = [2, 2, 3, 3]
 
     x = Convolution2D(16, 5, 5, init=Config.WEIGHT_INIT,

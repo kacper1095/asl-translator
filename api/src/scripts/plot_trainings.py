@@ -92,7 +92,7 @@ def plot_csv_file(reader, path):
         if len(f1) > 0:
             plot_data([f1, f1_val], 'miara F1', os.path.join(save_path, 'f1.png'), 'Zależność miary f1 od numeru epoki')
         with open(os.path.join(save_path, 'stats.csv'), 'w') as f:
-            f.write('epoch,name,value\n')
+            f.write('epoch & name & value \\\\\n')
             write_to_file(f, np.argmin(loss), 'loss', np.min(loss))
             write_to_file(f, np.argmin(loss_val), 'val_loss', np.min(loss_val))
             if len(f1) > 0:
@@ -118,7 +118,7 @@ def plot_data(data, y_label, save_path, title):
 
 
 def write_to_file(file, epoch, name, value):
-    file.write('{},{},{}\n'.format(epoch, name, value))
+    file.write('{} & {} & {}\\\\\n'.format(epoch, name, value))
 
 
 if __name__ == '__main__':
