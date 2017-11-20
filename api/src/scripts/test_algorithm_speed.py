@@ -31,8 +31,6 @@ def list_model_folders():
 def test_speed(model_path):
     filename = 'speedtest.txt'
     path = os.path.dirname(model_path)
-    if os.path.exists(os.path.join(path, filename)):
-        return
     model = load_model(model_path, custom_objects={'f1': lambda x, y: x})
     speed_test_text = get_speed_results(model)
     with open(os.path.join(path, filename), 'w') as f:
@@ -40,7 +38,7 @@ def test_speed(model_path):
 
 
 def get_speed_results(model):
-    text_lines = ['batch_size & time_mean & time_std \\\\']
+    text_lines = ['wielkość batcha & średni czas $[$\\textit{s}$]$ & odchylenie standardowe czasu  $[$\\textit{s}$]$ \\\\']
     for batch_size in TESTING_BATCH_SIZES:
         input_shape = (batch_size,) + tuple(model.input_shape[1:])
         times = []
@@ -51,12 +49,13 @@ def get_speed_results(model):
             model.predict(x, batch_size)
             end = time.time()
             times.append(end - start)
-        text_lines.append('{} & {} & {} \\\\'.format(batch_size, np.mean(times), np.std(times)))
+        text_lines.append('{} & {} & {} \\\\'.format(batch_size, round(float(np.mean(times)), 4), round(float(np.std(times)))))
     return '\n'.join(text_lines)
 
 
 def initiate_computational_graph_for(model, input_shape):
     model.predict(np.random.normal(size=input_shape))
+
 
 if __name__ == '__main__':
     test()

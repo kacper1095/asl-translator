@@ -92,14 +92,14 @@ def plot_csv_file(reader, path):
         if len(f1) > 0:
             plot_data([f1, f1_val], 'miara F1', os.path.join(save_path, 'f1.png'), 'Zależność miary f1 od numeru epoki')
         with open(os.path.join(save_path, 'stats.txt'), 'w') as f:
-            f.write('epoch & name & value \\\\\n')
-            write_to_file(f, np.argmin(loss), 'loss', np.min(loss))
-            write_to_file(f, np.argmin(loss_val), 'val_loss', np.min(loss_val))
+            f.write('epoka & nazwa & wartość \\\\\n')
+            write_to_file(f, np.argmin(loss), 'strata na treningowym', np.min(loss))
+            write_to_file(f, np.argmin(loss_val), 'strata na walidacyjnym', np.min(loss_val))
             if len(f1) > 0:
-                write_to_file(f, np.argmax(f1), 'f1', np.max(f1))
-                write_to_file(f, np.argmax(f1_val), 'val_f1', np.max(f1_val))
-            write_to_file(f, np.argmax(accuracy), 'accuracy', np.max(accuracy))
-            write_to_file(f, np.argmax(accuracy_val), 'val_accuracy', np.max(accuracy_val))
+                write_to_file(f, np.argmax(f1), 'f1 na treningowym', np.max(f1))
+                write_to_file(f, np.argmax(f1_val), 'f1 na walidacyjnym', np.max(f1_val))
+            write_to_file(f, np.argmax(accuracy), 'skuteczność na treningowym', np.max(accuracy))
+            write_to_file(f, np.argmax(accuracy_val), 'skuteczność na walidacyjnym', np.max(accuracy_val))
 
 
 def plot_data(data, y_label, save_path, title):
@@ -118,7 +118,7 @@ def plot_data(data, y_label, save_path, title):
 
 
 def write_to_file(file, epoch, name, value):
-    file.write('{} & {} & {}\\\\\n'.format(epoch, name, value))
+    file.write('{} & {} & {}\\\\\n'.format(epoch, name, round(float(value), 4)))
 
 
 if __name__ == '__main__':
