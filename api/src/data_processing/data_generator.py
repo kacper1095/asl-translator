@@ -105,7 +105,7 @@ def generator_with_feature_extraction(path,
         for i in index:
             try:
                 im_fn = image_list[i]
-                im = cv2.imread(im_fn)
+                im = cv2.imread(im_fn).astype(np.float32)
                 # print im_fn
                 h, w, _ = im.shape
                 image_class = get_class_from_path(im_fn)
@@ -117,7 +117,7 @@ def generator_with_feature_extraction(path,
                 im /= 255.
                 if phase == config.TrainingConfig.TRAINING_PHASE:
                     im = random_preprocessing(im)
-                im = prepare_image(im * 255.)
+                im = prepare_image((im - im.min()) / (im.max() - im.min()))
                 images.append(im)
                 classes.append(config.DataConfig.get_one_hot(image_class))
                 if len(images) == batch_size:

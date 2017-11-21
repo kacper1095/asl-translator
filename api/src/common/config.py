@@ -44,7 +44,7 @@ class TrainingConfig(object):
     BATCH_SIZE = 32
     TRAINING_PHASE = 1
     TESTING_PHASE = 0
-    INITIAL_LEARNING_RATE = 0.001
+    INITIAL_LEARNING_RATE = 0.02
     SVM_WEIGHT_REGULARIZER = 0.01
 
     lr_schedule = [20, 40, 60]  # epoch_step
@@ -91,8 +91,8 @@ class TrainingConfig(object):
         }
 
 
+from sklearn.preprocessing import LabelEncoder
 class DataConfig(object):
-    from sklearn.preprocessing import LabelEncoder
     PATHS = {
         'RAW_DATA': os.path.join('data', 'raw'),
         'PROCESSED_DATA': os.path.join('data', 'processed'),
@@ -122,6 +122,22 @@ class DataConfig(object):
         x = [0.0] * len(DataConfig.AVAILABLE_CHARS)
         x[DataConfig.get_class(sign)[0]] = 1.0
         return x
+
+    @staticmethod
+    def get_letter(cls):
+        return DataConfig.CLASS_ENCODER.inverse_transform([cls])
+
+    @staticmethod
+    def use_full_alphabet():
+        DataConfig.AVAILABLE_CHARS = 'abcdefghijklmnopqrstuwxyz'
+        DataConfig.CLASS_ENCODER = LabelEncoder()
+        DataConfig.CLASS_ENCODER.fit(list(DataConfig.AVAILABLE_CHARS))
+
+    @staticmethod
+    def use_partial_alphabet():
+        DataConfig.AVAILABLE_CHARS = 'abcdefghiklmnopqrstuvwxy'
+        DataConfig.CLASS_ENCODER = LabelEncoder()
+        DataConfig.CLASS_ENCODER.fit(list(DataConfig.AVAILABLE_CHARS))
 
     @staticmethod
     def get_number_of_classes():

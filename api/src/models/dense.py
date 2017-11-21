@@ -14,10 +14,9 @@ def gaussian_radial_basis_function(x):
     return K.exp(-(K.abs(means - x)) ** 2)
 
 
-def create_model():
-    inputs = Input(Config.INPUT_SHAPE)
-    x = Flatten()(inputs)
-    x = Dense(sum(s for s in Config.INPUT_SHAPE[1:]) // 2, activation='sigmoid')(x)
+def create_model(input_shape=Config.INPUT_SHAPE):
+    inputs = Input(input_shape)
+    x = Dense(1024, activation='relu')(inputs)
     x = Dense(DataConfig.get_number_of_classes(), activation='softmax')(x)
     model = Model(input=inputs, output=x)
     return model

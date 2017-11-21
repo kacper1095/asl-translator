@@ -8,6 +8,7 @@ from ..models.dense import create_model
 from ..data_processing.data_generator import DataGenerator
 from ..common.config import TrainingConfig, DataConfig, Config
 from ..common.utils import print_info, ensure_dir
+from .plot_trainings import get_description_string
 
 from keras.callbacks import ModelCheckpoint, CSVLogger, TensorBoard, LearningRateScheduler, EarlyStopping
 
@@ -15,8 +16,9 @@ RUNNING_TIME = datetime.datetime.now().strftime("%H_%M_%d_%m_%y")
 
 
 def train(num_epochs, batch_size, input_size, num_workers):
-    ensure_dir(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME))
-    model = create_model()
+    if not Config.NO_SAVE:
+        ensure_dir(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME))
+    model = create_model((2592,))
 
     callbacks = [
         ModelCheckpoint(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'weights.h5'), save_best_only=True, monitor=TrainingConfig.callbacks_monitor),
@@ -24,18 +26,21 @@ def train(num_epochs, batch_size, input_size, num_workers):
         # TensorBoard(log_dir=os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'tensorboard')),
         LearningRateScheduler(TrainingConfig.schedule),
         EarlyStopping(patience=5)
-    ]
+    ]if not Config.NO_SAVE else []
 
-    introduced_change = input("What new was introduced?: ")
-    with open(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'change.txt'), 'w') as f:
-        f.write(introduced_change)
+    if not Config.NO_SAVE:
+        introduced_change = input("What new was introduced?: ")
+        with open(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'change.txt'), 'w') as f:
+            f.write(introduced_change)
 
-    with open(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'config.yml'), 'w') as f:
-        yaml.dump([TrainingConfig.__dict__, Config.__dict__, DataConfig.__dict__], f, default_flow_style=False)
+        with open(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'config.yml'), 'w') as f:
+            yaml.dump(list([TrainingConfig.get_config(), Config.get_config(), DataConfig.get_config()]), f, default_flow_style=False)
 
+        with open(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'model.txt'), 'w') as f:
+            f.write(get_description_string(model))
     optimizer = TrainingConfig.optimizer
-    data_generator_train = DataGenerator(DataConfig.PATHS['TRAINING_PROCESSED_DATA'], batch_size, input_size, False, False)
-    data_generator_valid = DataGenerator(DataConfig.PATHS['VALID_PROCESSED_DATA'], batch_size, input_size, True, False)
+    data_generator_train = DataGenerator(DataConfig.PATHS['TRAINING_PROCESSED_DATA'], batch_size, input_size, False, True)
+    data_generator_valid = DataGenerator(DataConfig.PATHS['VALID_PROCESSED_DATA'], batch_size, input_size, True, True)
     model.compile(optimizer, TrainingConfig.loss, metrics=TrainingConfig.metrics)
 
     model.fit_generator(data_generator_train, samples_per_epoch=data_generator_train.samples_per_epoch, nb_epoch=num_epochs,
