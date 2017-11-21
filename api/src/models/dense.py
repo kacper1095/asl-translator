@@ -16,7 +16,8 @@ def gaussian_radial_basis_function(x):
 
 def create_model(input_shape=Config.INPUT_SHAPE):
     inputs = Input(input_shape)
-    x = Dense(1024, activation='relu')(inputs)
+    x = BatchNormalization(axis=-1)(inputs)
+    x = Dense(1024, activation='elu')(x)
     x = Dense(DataConfig.get_number_of_classes(), activation='softmax')(x)
     model = Model(input=inputs, output=x)
     return model

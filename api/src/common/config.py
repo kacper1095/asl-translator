@@ -63,7 +63,7 @@ class TrainingConfig(object):
             return TrainingConfig.INITIAL_LEARNING_RATE * 0.2 * 0.2
         return TrainingConfig.INITIAL_LEARNING_RATE * 0.2 * 0.2 * 0.2
 
-    optimizer = 'adam'
+    optimizer = 'sgd'
     available_optimizers = {
         'sgd': SGD(INITIAL_LEARNING_RATE, decay=1e-6, momentum=0.9, nesterov=True),
         'adam': Adam(INITIAL_LEARNING_RATE)
@@ -129,13 +129,19 @@ class DataConfig(object):
 
     @staticmethod
     def use_full_alphabet():
-        DataConfig.AVAILABLE_CHARS = 'abcdefghijklmnopqrstuwxyz'
-        DataConfig.CLASS_ENCODER = LabelEncoder()
-        DataConfig.CLASS_ENCODER.fit(list(DataConfig.AVAILABLE_CHARS))
+        DataConfig.__reinitialize_with_signs('abcdefghijklmnopqrstuwxyz')
 
     @staticmethod
     def use_partial_alphabet():
-        DataConfig.AVAILABLE_CHARS = 'abcdefghiklmnopqrstuvwxy'
+        DataConfig.__reinitialize_with_signs('abcdefghiklmnopqrstuvwxy')
+
+    @staticmethod
+    def use_alphabet_with_digits():
+        DataConfig.__reinitialize_with_signs(string.digits + string.ascii_lowercase)
+
+    @staticmethod
+    def __reinitialize_with_signs(sings):
+        DataConfig.AVAILABLE_CHARS = sings
         DataConfig.CLASS_ENCODER = LabelEncoder()
         DataConfig.CLASS_ENCODER.fit(list(DataConfig.AVAILABLE_CHARS))
 

@@ -58,8 +58,11 @@ def test_one_model(model_path):
     input_shape = model.input_shape
     output_shape = model.output_shape
 
+    print(output_shape)
     if output_shape[-1] == 24:
         DataConfig.use_partial_alphabet()
+    elif output_shape[-1] == 36:
+        DataConfig.use_alphabet_with_digits()
     else:
         DataConfig.use_full_alphabet()
 
