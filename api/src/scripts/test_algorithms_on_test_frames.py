@@ -43,9 +43,12 @@ def process_data(data, input_shape):
         for char, img_file in zip(word, image_files):
             if type(input_shape) != tuple:
                 continue
-            if len(input_shape) == 2:
+            if len(input_shape) == 2 and input_shape[-1] == 2592:
                 img = cv2.imread(img_file)
                 img = prepare_image(img)
+            elif len(input_shape) == 2 and input_shape[-1] == 512:
+                img = cv2.imread(img_file)
+                img = prepare_image(img, cells_per_block=(1, 1))
             elif len(input_shape) == 4:
                 img = cv2.imread(img_file).astype(np.float32) / 255.
                 img = cv2.resize(img, (Config.IMAGE_SIZE, Config.IMAGE_SIZE))

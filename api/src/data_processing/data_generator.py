@@ -33,10 +33,10 @@ def get_class_from_path(im_fn):
     return components[-2]
 
 
-def prepare_image(img):
+def prepare_image(img, cells_per_block=(3, 3)):
     img = cv2.resize(img, (config.Config.IMAGE_SIZE, config.Config.IMAGE_SIZE))
     img = color.rgb2gray(img)
-    features = hog(img, 8, pixels_per_cell=(8, 8), cells_per_block=(3, 3), visualise=False)
+    features = hog(img, 8, pixels_per_cell=(8, 8), cells_per_block=cells_per_block, visualise=False)
     return features
 
 
