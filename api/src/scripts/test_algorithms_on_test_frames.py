@@ -22,8 +22,11 @@ def get_all_models():
     return weights
 
 
-def load_data():
-    main_path = os.path.join('data', 'test', 'frames')
+def load_data(use_real_frames=False):
+    if use_real_frames:
+        main_path = os.path.join('data', 'test', 'frames_real')
+    else:
+        main_path = os.path.join('data', 'test', 'frames')
     data = []
     for folder in sorted(os.listdir(main_path)):
         word = folder.split(' ')[-1]
@@ -38,12 +41,13 @@ def process_data(data, input_shape):
     batch_x = []
     for word, image_files in data:
         for char, img_file in zip(word, image_files):
-            img = cv2.imread(img_file).astype(np.float32) / 255.
             if type(input_shape) != tuple:
                 continue
             if len(input_shape) == 2:
+                img = cv2.imread(img_file)
                 img = prepare_image(img)
             elif len(input_shape) == 4:
+                img = cv2.imread(img_file).astype(np.float32) / 255.
                 img = cv2.resize(img, (Config.IMAGE_SIZE, Config.IMAGE_SIZE))
                 img = img.transpose((2, 0, 1))
             else:
@@ -53,12 +57,11 @@ def process_data(data, input_shape):
         batch_x.clear()
 
 
-def test_one_model(model_path):
+def test_one_model(model_path, use_real_frames=False):
     model = load_model(model_path, custom_objects={'f1': lambda x, y: x})
     input_shape = model.input_shape
     output_shape = model.output_shape
 
-    print(output_shape)
     if output_shape[-1] == 24:
         DataConfig.use_partial_alphabet()
     elif output_shape[-1] == 36:
@@ -66,7 +69,7 @@ def test_one_model(model_path):
     else:
         DataConfig.use_full_alphabet()
 
-    data = load_data()
+    data = load_data(use_real_frames)
     results = []
     for batch_x, batch_y in process_data(data, input_shape):
         prediction = model.predict(batch_x)
@@ -78,11 +81,25 @@ def test_one_model(model_path):
     return results
 
 
-def test():
+def test_ideal():
     results = ['model_name & mean_levensthein \\\\']
     for folder, model_path in tqdm.tqdm(get_all_models()):
         try:
-            lev_dist = np.mean(test_one_model(model_path))
+            lev_dist = np.mean(test_one_model(model_path, False))
+            results.append('{0} & {1:.4f} \\\\'.format(folder, lev_dist))
+        except Exception as e:
+            print('Exception for: {} in {} '.format(model_path, folder))
+            print(e)
+    with open(os.path.join(TrainingConfig.PATHS['MODELS'], 'result_ideal_test.txt'), 'w') as f:
+        f.write('\n'.join(results))
+    return results
+
+
+def test_real():
+    results = ['model_name & mean_levensthein \\\\']
+    for folder, model_path in tqdm.tqdm(get_all_models()):
+        try:
+            lev_dist = np.mean(test_one_model(model_path, True))
             results.append('{0} & {1:.4f} \\\\'.format(folder, lev_dist))
         except Exception as e:
             print('Exception for: {} in {} '.format(model_path, folder))
@@ -93,4 +110,5 @@ def test():
 
 
 if __name__ == '__main__':
-    test()
+    test_ideal()
+    test_real()

@@ -161,7 +161,7 @@ if __name__ == "__main__":
     init = (3, 64, 64)
 
     model = create_wide_residual_network(init, N=2, k=8, dropout=0.25, path_weights=DataConfig.PATHS['PRETRAINED_MODEL_FOLDER'] + '/WRN-16-8 Weights.h5',
-                                         layer_to_stop_freezing='merge_4')
+                                         layer_to_stop_freezing='merge_2')
 
 
     model.summary()
