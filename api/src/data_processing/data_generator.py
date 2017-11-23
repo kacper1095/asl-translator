@@ -8,7 +8,7 @@ import random
 
 random.seed(0)
 
-from ..common import config
+from ..common.config import DataConfig, TrainingConfig, Config
 from ..common.logger import logger
 from keras.preprocessing.image import flip_axis, random_rotation, random_shift, random_zoom
 from ..keras_extensions.data_tools.augmenting_tools import gamma_augmentation, poisson_noise, hue_change, brightness_change
@@ -34,7 +34,7 @@ def get_class_from_path(im_fn):
 
 
 def prepare_image(img, cells_per_block=(3, 3)):
-    img = cv2.resize(img, (config.Config.IMAGE_SIZE, config.Config.IMAGE_SIZE))
+    img = cv2.resize(img, (Config.IMAGE_SIZE, Config.IMAGE_SIZE))
     img = color.rgb2gray(img)
     features = hog(img, 8, pixels_per_cell=(8, 8), cells_per_block=cells_per_block, visualise=False)
     return features
@@ -66,13 +66,13 @@ def generator(path,
                 im = cv2.resize(im, dsize=(resize_w, resize_h))
                 new_h, new_w, _ = im.shape
                 im = im[:, :, ::-1].astype(np.float32) / 255.
-                if phase == config.TrainingConfig.TRAINING_PHASE:
+                if phase == TrainingConfig.TRAINING_PHASE:
                     im = random_preprocessing(im)
                 if K.backend() == 'tensorflow':
                     images.append(im)
                 else:
                     images.append(im.transpose((2, 0, 1)))
-                classes.append(config.DataConfig.get_one_hot(image_class))
+                classes.append(DataConfig.get_one_hot(image_class))
                 if len(images) == batch_size:
                     yield np.array(images), np.array(classes)
                     images = []
@@ -91,7 +91,7 @@ def get_generator_for_svm(created_data_generator):
 
 
 def generator_with_feature_extraction(path,
-                                      input_size=config.Config.IMAGE_SIZE,
+                                      input_size=Config.IMAGE_SIZE,
                                       batch_size=32,
                                       phase=1):
     image_list = np.array(get_images(path))
@@ -114,11 +114,11 @@ def generator_with_feature_extraction(path,
                 resize_w = input_size
                 im = cv2.resize(im, dsize=(resize_w, resize_h))
                 new_h, new_w, _ = im.shape
-                if phase == config.TrainingConfig.TRAINING_PHASE:
+                if phase == TrainingConfig.TRAINING_PHASE:
                     im = random_preprocessing(im)
                 im = prepare_image(im)
                 images.append(im)
-                classes.append(config.DataConfig.get_one_hot(image_class))
+                classes.append(DataConfig.get_one_hot(image_class))
                 if len(images) == batch_size:
                     yield np.array(images), np.array(classes)
                     images = []
@@ -153,10 +153,10 @@ class DataGenerator(object):
         self.dir_path = dir_path
         self.batch_size = batch_size
         self.input_size = input_size
-        self.training_phase = config.TrainingConfig.TESTING_PHASE if valid or without_preprocessing else config.TrainingConfig.TRAINING_PHASE
+        self.training_phase = TrainingConfig.TESTING_PHASE if valid or without_preprocessing else TrainingConfig.TRAINING_PHASE
 
         if use_hog:
-            self.generator = generator_with_feature_extraction(dir_path, config.Config.IMAGE_SIZE,
+            self.generator = generator_with_feature_extraction(dir_path, Config.IMAGE_SIZE,
                                                                batch_size, self.training_phase)
         else:
             self.generator = generator(input_size=input_size, batch_size=batch_size,
@@ -182,7 +182,7 @@ class DataGenerator(object):
     def get_class_weights(self):
         classes = []
         for folder in os.listdir(self.dir_path):
-            classes.extend(list(config.DataConfig.get_class(folder)) * len(os.listdir(os.path.join(self.dir_path, folder))))
+            classes.extend(list(DataConfig.get_class(folder)) * len(os.listdir(os.path.join(self.dir_path, folder))))
         class_weights = list(class_weight.compute_class_weight('balanced', np.unique(classes), classes))
         dict_weights = {}
         for i, v in enumerate(class_weights):

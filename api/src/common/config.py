@@ -44,7 +44,7 @@ class TrainingConfig(object):
     BATCH_SIZE = 32
     TRAINING_PHASE = 1
     TESTING_PHASE = 0
-    INITIAL_LEARNING_RATE = 0.02
+    INITIAL_LEARNING_RATE = 0.03
     SVM_WEIGHT_REGULARIZER = 0.01
 
     lr_schedule = [20, 40, 60]  # epoch_step

@@ -1,33 +1,44 @@
+import sys
 import os
+sys.path.append(os.path.join('api', 'src', 'scripts'))
 import datetime
 import yaml
 import api.src.common.initial_environment_config
 
-from ..models.wrn_by_titu import create_wide_residual_network
-from ..data_processing.data_generator import DataGenerator
-from ..common.config import TrainingConfig, DataConfig, Config
-from ..common.utils import print_info, ensure_dir
-from .plot_trainings import get_description_string
+from sklearn.preprocessing import LabelEncoder
+from sklearn.base import BaseEstimator, TransformerMixin
+from api.src.models.wrn_by_titu import create_wide_residual_network
+from api.src.data_processing.data_generator import DataGenerator, generator
+from api.src.common.config import TrainingConfig, DataConfig, Config
+from api.src.common.utils import print_info, ensure_dir
+from api.src.scripts.plot_trainings import get_description_string
+from api.src.common import config
 
 from hyperas import optim
 from hyperas.distributions import choice, uniform, conditional
 from hyperopt import Trials, STATUS_OK, tpe
 from keras.callbacks import ModelCheckpoint, CSVLogger, EarlyStopping
+from api.src.keras_extensions.metrics import f1
 
-RUNNING_TIME = datetime.datetime.now().strftime("%H_%M_%d_%m_%y")
+import keras.backend as K
+
+
+def get_running_time():
+    return datetime.datetime.now().strftime("%H_%M_%d_%m_%y")
 
 
 def data():
-    data_generator_train = DataGenerator(DataConfig.PATHS['TRAINING_PROCESSED_DATA'], TrainingConfig.BATCH_SIZE, Config.IMAGE_SIZE, False,
-                                         without_preprocessing=True)
-    data_generator_valid = DataGenerator(DataConfig.PATHS['VALID_PROCESSED_DATA'], TrainingConfig.BATCH_SIZE, Config.IMAGE_SIZE, True,
-                                         without_preprocessing=True)
+    data_generator_train = DataGenerator(DataConfig.PATHS['TRAINING_PROCESSED_DATA'], TrainingConfig.BATCH_SIZE,
+                                         Config.IMAGE_SIZE, False)
+    data_generator_valid = DataGenerator(DataConfig.PATHS['VALID_PROCESSED_DATA'], TrainingConfig.BATCH_SIZE,
+                                         Config.IMAGE_SIZE, True)
     return data_generator_train, data_generator_valid
 
 
 def train(data_generator_train, data_generator_valid):
+    running_time = get_running_time()
     if not Config.NO_SAVE:
-        ensure_dir(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME))
+        ensure_dir(os.path.join(TrainingConfig.PATHS['MODELS'], running_time))
 
     if conditional({{choice([False, True])}}):  # using pretrained weights
         model = create_wide_residual_network(Config.INPUT_SHAPE, N=2, k=8, dropout={{uniform(0.2, 0.8)}},
@@ -42,18 +53,18 @@ def train(data_generator_train, data_generator_valid):
                                              dropout={{uniform(0.2, 0.8)}})
 
     callbacks = [
-        ModelCheckpoint(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'weights.h5'), save_best_only=True,
+        ModelCheckpoint(os.path.join(TrainingConfig.PATHS['MODELS'], running_time, 'weights.h5'), save_best_only=True,
                         monitor=TrainingConfig.callbacks_monitor),
-        CSVLogger(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'history.csv')),
+        CSVLogger(os.path.join(TrainingConfig.PATHS['MODELS'], running_time, 'history.csv')),
         EarlyStopping(patience=12)
     ] if not Config.NO_SAVE else []
 
     if not Config.NO_SAVE:
-        with open(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'config.yml'), 'w') as f:
+        with open(os.path.join(TrainingConfig.PATHS['MODELS'], running_time, 'config.yml'), 'w') as f:
             yaml.dump(list([TrainingConfig.get_config(), Config.get_config(), DataConfig.get_config()]), f,
                       default_flow_style=False)
 
-        with open(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'model.txt'), 'w') as f:
+        with open(os.path.join(TrainingConfig.PATHS['MODELS'], running_time, 'model.txt'), 'w') as f:
             f.write(get_description_string(model))
 
     optimizer = TrainingConfig.optimizer
@@ -69,14 +80,18 @@ def train(data_generator_train, data_generator_valid):
 
 
 def main():
-    print_info("Training")
+    running_time = get_running_time()
     best_run, best_model = optim.minimize(model=train,
                                           data=data,
                                           algo=tpe.suggest,
+                                          functions=[
+                                              get_running_time,
+                                          ],
                                           max_evals=2,
                                           trials=Trials())
+    print_info("Training")
     print(best_run)
-    best_model.save_weights(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'best_of_all.h5'))
+    best_model.save_weights(os.path.join(TrainingConfig.PATHS['MODELS'], running_time, 'best_of_all.h5'))
     print_info("Finished")
 
 
