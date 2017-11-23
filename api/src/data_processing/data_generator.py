@@ -132,7 +132,7 @@ def generator_with_feature_extraction(path,
 def random_preprocessing(img):
     if random.random() < 0.5:
         img = flip_axis(img, 1)
-    img = random_rotation(img, 15, 0, 1, 2)
+    img = random_rotation(img, 7.5, 0, 1, 2)
 
     img = random_zoom(img, (0.75, 1.25), 0, 1, 2)
     img = random_shift(img, 0.2, 0.2, 0, 1, 2)

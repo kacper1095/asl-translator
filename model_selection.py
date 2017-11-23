@@ -74,9 +74,9 @@ def train(data_generator_train, data_generator_valid):
                         nb_epoch=TrainingConfig.NB_EPOCHS,
                         validation_data=data_generator_valid, nb_val_samples=data_generator_valid.samples_per_epoch,
                         callbacks=callbacks, class_weight=data_generator_train.get_class_weights)
-    loss, acc, _, _ = model.evaluate_generator(data_generator_valid, data_generator_valid.samples_per_epoch)
-    print('Test accuracy: ', acc)
-    return {'loss': -acc, 'status': STATUS_OK, 'model': model}
+    metrics = model.evaluate_generator(data_generator_valid, data_generator_valid.samples_per_epoch)
+    print('Test accuracy: ', metrics[1])
+    return {'loss': -metrics[1], 'status': STATUS_OK, 'model': model}
 
 
 def main():
