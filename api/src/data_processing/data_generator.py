@@ -41,11 +41,11 @@ class DataGenerator(object):
 
     @property
     def number_of_steps(self):
-        return len(self.__get_images(self.dir_path)) // self.batch_size
+        return len(self.get_images()) // self.batch_size
 
     @property
     def samples_per_epoch(self):
-        return len(self.__get_images(self.dir_path))
+        return len(self.get_images())
 
     @property
     def get_class_weights(self):
@@ -60,7 +60,7 @@ class DataGenerator(object):
 
     def generator(self,
                   phase=1):
-        image_list = np.array(self.__get_images(self.dir_path))
+        image_list = np.array(self.get_images())
         print('{} training images in {}'.format(
             image_list.shape[0], self.dir_path))
         index = np.arange(0, image_list.shape[0])
@@ -99,7 +99,7 @@ class DataGenerator(object):
                     break
 
     def generator_with_feature_extraction(self, phase=1):
-        image_list = np.array(self.__get_images(self.dir_path))
+        image_list = np.array(self.get_images())
         print('{} training images in {}'.format(
             image_list.shape[0], self.dir_path))
         index = np.arange(0, image_list.shape[0])
@@ -139,14 +139,14 @@ class DataGenerator(object):
         features = hog(img, 8, pixels_per_cell=(8, 8), cells_per_block=cells_per_block, visualise=False)
         return features
 
-    def __get_images(self, path):
+    def get_images(self):
         files = []
         for ext in ['jpg', 'png', 'jpeg']:
             files.extend(glob.glob(
-                os.path.join(path, '**', '*.{}'.format(ext))))
+                os.path.join(self.dir_path, '**', '*.{}'.format(ext))))
         return files
 
-    def __get_class_from_path(self, im_fn):
+    def get_class_from_path(self, im_fn):
         components = im_fn.split(os.path.sep)
         return components[-2]
 
