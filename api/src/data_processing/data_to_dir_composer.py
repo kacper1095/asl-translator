@@ -85,12 +85,6 @@ def parse_handspeak_data():
             process_img(src_path, dst_path)
     print_info('Processed heandspeak')
 
-DATASET_FUNCTIONS = [
-    # parse_empslocal_dataset,
-    # parse_massey_data,
-    parse_handspeak_data
-]
-
 
 def create_letter_dirs():
     for sign in AVAILABLE_CHARS:
@@ -111,12 +105,17 @@ def parse_massey_file_name(file_name):
     return components[1], int(components[0][-1])
 
 
-def main(args):
+def main():
+    parse_functions = [
+        # parse_empslocal_dataset,
+        # parse_massey_data,
+        parse_handspeak_data
+    ]
     create_letter_dirs()
     # clear_dirs()
-    for data_function in DATASET_FUNCTIONS:
+    for data_function in parse_functions:
         data_function()
 
 
 if __name__ == '__main__':
-    main(None)
+    main()

@@ -16,7 +16,7 @@ from api.src.common import config
 
 from hyperas import optim
 from hyperas.distributions import choice, uniform, conditional
-from hyperopt import Trials, STATUS_OK, tpe
+from hyperopt import Trials, STATUS_OK, tpe, rand
 from keras.callbacks import ModelCheckpoint, CSVLogger, EarlyStopping
 from api.src.keras_extensions.metrics import f1
 
@@ -40,7 +40,7 @@ def train(data_generator_train, data_generator_valid):
     if not Config.NO_SAVE:
         ensure_dir(os.path.join(TrainingConfig.PATHS['MODELS'], running_time))
 
-    if conditional({{choice([False, True])}}):  # using pretrained weights
+    if conditional({{choice(['scratch', 'pretrained'])}}) == 'pretrained    ':  # using pretrained weights
         model = create_wide_residual_network(Config.INPUT_SHAPE, N=2, k=8, dropout={{uniform(0.2, 0.8)}},
                                              path_weights=os.path.join(DataConfig.PATHS['PRETRAINED_MODEL_FOLDER'],
                                                                        'WRN-16-8 Weights.h5'),
@@ -50,7 +50,7 @@ def train(data_generator_train, data_generator_valid):
     else:
         model = create_wide_residual_network(Config.INPUT_SHAPE, N={{choice([1, 2, 3])}},
                                              k={{choice([1, 2, 4, 8])}},
-                                             dropout={{uniform(0.2, 0.8)}})
+                                             dropout={{uniform(0.2, 0.6)}})
 
     callbacks = [
         ModelCheckpoint(os.path.join(TrainingConfig.PATHS['MODELS'], running_time, 'weights.h5'), save_best_only=True,
@@ -83,11 +83,11 @@ def main():
     running_time = get_running_time()
     best_run, best_model = optim.minimize(model=train,
                                           data=data,
-                                          algo=tpe.suggest,
+                                          algo=rand.suggest,
                                           functions=[
                                               get_running_time,
                                           ],
-                                          max_evals=2,
+                                          max_evals=3,
                                           trials=Trials())
     print_info("Training")
     print(best_run)

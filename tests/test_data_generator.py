@@ -1,5 +1,4 @@
-from api.src.data_processing import data_generator
-from api.src.common.config import DataConfig
+from api.src.data_processing.data_generator import DataGenerator
 from PIL import Image
 
 import os
@@ -7,32 +6,36 @@ import numpy as np
 
 
 def test_get_images_blank():
-    assert data_generator.get_images(os.path.join('data', 'bland')) == []
+    data_gen = DataGenerator(os.path.join('data', 'bland'), 1, 64, False)
+    assert data_gen.__get_images() == []
 
 
 def test_get_images():
     true_values = ['data{0}letters{0}a{0}augmented.jpg'.format(os.path.sep), 'data{0}letters{0}a{0}orig.jpg'.format(os.path.sep),
                    'data{0}letters{0}b{0}augmented.jpg'.format(os.path.sep), 'data{0}letters{0}b{0}orig.jpg'.format(os.path.sep)]
     data_letters = os.path.join('data', 'letters')
-    assert all(img in true_values for img in data_generator.get_images(data_letters)) and len(
-        data_generator.get_images(data_letters)) == len(true_values)
+    data_gen = DataGenerator(data_letters, 1, 64, False)
+    assert all(img in true_values for img in data_gen.__get_images() and len(
+        data_gen.__get_images()) == len(true_values))
 
 
 def test_get_class_from_filename():
-    paths = data_generator.get_images(os.path.join('data', 'letters'))
+    data_gen = DataGenerator(os.path.join('data', 'letters'), 1, 64, False)
+    paths = data_gen.__get_images()
     true_classes = ['a', 'a', 'b', 'b']
-    tested = [data_generator.get_class_from_path(p) for p in paths]
+    tested = [data_gen.__get_class_from_path(p) for p in paths]
     assert all(x == y for x, y in zip(true_classes, tested))
 
 
 def test_prepare_image():
+    data_gen = DataGenerator(None, 32, 64, False)
     img_w = img_h = 64
     bias = np.random.rand(img_w, img_h, 1) * 64
     variance = np.random.rand(img_w, img_h, 1) * (255 - 64)
     imarray = np.random.rand(img_w, img_h, 3) * variance + bias
     im = Image.fromarray(imarray.astype('uint8')).convert('RGB')
     im = np.asarray(im)
-    features = data_generator.prepare_image(im)
+    features = data_gen.prepare_image(im)
     assert len(features) == 2592
     assert len(features.shape) == 1
     assert features.shape == (2592,)
