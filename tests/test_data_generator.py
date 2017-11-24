@@ -7,7 +7,7 @@ import numpy as np
 
 def test_get_images_blank():
     data_gen = DataGenerator(os.path.join('data', 'bland'), 1, 64, False)
-    assert data_gen.__get_images() == []
+    assert data_gen.get_images() == []
 
 
 def test_get_images():
@@ -15,15 +15,15 @@ def test_get_images():
                    'data{0}letters{0}b{0}augmented.jpg'.format(os.path.sep), 'data{0}letters{0}b{0}orig.jpg'.format(os.path.sep)]
     data_letters = os.path.join('data', 'letters')
     data_gen = DataGenerator(data_letters, 1, 64, False)
-    assert all(img in true_values for img in data_gen.__get_images() and len(
-        data_gen.__get_images()) == len(true_values))
+    assert all(img in true_values for img in data_gen.get_images()) and len(
+        data_gen.get_images()) == len(true_values)
 
 
 def test_get_class_from_filename():
     data_gen = DataGenerator(os.path.join('data', 'letters'), 1, 64, False)
-    paths = data_gen.__get_images()
-    true_classes = ['a', 'a', 'b', 'b']
-    tested = [data_gen.__get_class_from_path(p) for p in paths]
+    paths = data_gen.get_images()
+    true_classes = sorted(['a', 'a', 'b', 'b'])
+    tested = sorted([data_gen.get_class_from_path(p) for p in paths])
     assert all(x == y for x, y in zip(true_classes, tested))
 
 

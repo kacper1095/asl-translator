@@ -31,9 +31,9 @@ def test_values():
         [0.1, 0.1, 0.1, 0.7]
     ]))
 
-    assert_values = [0.6666666269302368, 0.6666666865348816, 0.6666666865348816]
+    assert_values = [0.6666659116744995, 0.6666666865348816, 0.6666666865348816]
     for metric, correct_value in zip(metrics_to_test, assert_values):
         output = metric(y_true, y_pred)
-        assert K.eval(output) == correct_value
+        assert K.eval(output) - correct_value < 1e-5
 
 
