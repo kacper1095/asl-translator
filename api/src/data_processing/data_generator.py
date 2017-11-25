@@ -159,7 +159,7 @@ class DataGenerator(object):
         img = random_shift(img, 0.2, 0.2, 0, 1, 2)
         # img = gaussian_filter(img, sigma=[random.uniform(0.0, 0.7), random.uniform(0.0, 0.7),random.uniform(0.0, 0.2)])
         img = poisson_noise(img)
-        # img = hue_change(img)
+        img = hue_change(img)
         if random.random() < 0.5:
             img = brightness_change(img)
         else:

@@ -47,10 +47,10 @@ def capture_camera(model, time_interval, model_position_change=None):
         if model_position_change is not None and previous_frame is not None:
             changed_position = model_position_change.predict([np.array([previous_frame]), np.array([cropped_window])])[0]
             changed_position = np.argmax(changed_position)
-        if previos_change and not changed_position:
-            letter = classify_letter(model, cropped_window)
-            last_letter = letter
-            start = time.time()
+        # if previos_change and not changed_position:
+        letter = classify_letter(model, cropped_window)
+        last_letter = letter
+        start = time.time()
         previous_frame = cropped_window
         previos_change = changed_position
         image = image.copy()
