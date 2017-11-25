@@ -75,7 +75,7 @@ class DataGenerator(object):
                     im = cv2.imread(im_fn)
                     # print im_fn
                     h, w, _ = im.shape
-                    image_class = self.__get_class_from_path(im_fn)
+                    image_class = self.get_class_from_path(im_fn)
 
                     resize_h = self.input_size
                     resize_w = self.input_size
@@ -113,7 +113,7 @@ class DataGenerator(object):
                     im = cv2.imread(im_fn).astype(np.float32)
                     # print im_fn
                     h, w, _ = im.shape
-                    image_class = self.__get_class_from_path(im_fn)
+                    image_class = self.get_class_from_path(im_fn)
 
                     resize_h = self.input_size
                     resize_w = self.input_size
