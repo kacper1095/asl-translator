@@ -14,6 +14,7 @@ from api.src.common.config import TrainingConfig, DataConfig, Config
 from api.src.common.utils import print_info, ensure_dir
 from api.src.scripts.plot_trainings import get_description_string
 from api.src.common import config
+from keras.optimizers import SGD, Adam
 
 from hyperas import optim
 from hyperas.distributions import choice, uniform, conditional
@@ -43,16 +44,16 @@ def train(data_generator_train, data_generator_valid):
         ensure_dir(os.path.join(TrainingConfig.PATHS['MODELS'], running_time))
 
     if conditional({{choice(['scratch', 'pretrained'])}}) == 'pretrained':  # using pretrained weights
-        model = create_wide_residual_network(Config.INPUT_SHAPE, N=2, k=8, dropout={{uniform(0.2, 0.8)}},
+        model = create_wide_residual_network(Config.INPUT_SHAPE, N=2, k=8, dropout={{uniform(0.0, 0.9)}},
                                              path_weights=os.path.join(DataConfig.PATHS['PRETRAINED_MODEL_FOLDER'],
                                                                        'WRN-16-8 Weights.h5'),
                                              layer_to_stop_freezing={{choice([
                                                  'convolution2d_1', 'merge_2', 'convolution2d_3', 'merge_1'
                                              ])}})
     else:
-        model = create_wide_residual_network(Config.INPUT_SHAPE, N={{choice([1, 2, 3])}},
-                                             k={{choice([1, 2, 4, 8])}},
-                                             dropout={{uniform(0.2, 0.6)}})
+        model = create_wide_residual_network(Config.INPUT_SHAPE, N={{choice([1, 2, 3, 4])}},
+                                             k={{choice([1, 2, 4, 8, 10])}},
+                                             dropout={{uniform(0.0, 0.9)}})
 
     callbacks = [
         ModelCheckpoint(os.path.join(TrainingConfig.PATHS['MODELS'], running_time, 'weights.h5'), save_best_only=True,
@@ -69,8 +70,8 @@ def train(data_generator_train, data_generator_valid):
         with open(os.path.join(TrainingConfig.PATHS['MODELS'], running_time, 'model.txt'), 'w') as f:
             f.write(get_description_string(model))
 
-    optimizer = TrainingConfig.optimizer
-    model.compile(TrainingConfig.available_optimizers[optimizer], TrainingConfig.loss, metrics=TrainingConfig.metrics)
+    # optimizer = TrainingConfig.optimizer
+    model.compile({{choice([Adam(), Adam(0.02), SGD(0.02, momentum=0.9, nesterov=True)])}}, TrainingConfig.loss, metrics=TrainingConfig.metrics)
 
     model.fit_generator(data_generator_train, samples_per_epoch=data_generator_train.samples_per_epoch,
                         nb_epoch=TrainingConfig.NB_EPOCHS,
@@ -83,6 +84,7 @@ def train(data_generator_train, data_generator_valid):
 
 def main():
     running_time = get_running_time()
+    trials = Trials()
     best_run, best_model, space = optim.minimize(model=train,
                                                  data=data,
                                                  algo=tpe.suggest,
@@ -90,7 +92,7 @@ def main():
                                                      get_running_time,
                                                  ],
                                                  max_evals=3,
-                                                 trials=Trials(),
+                                                 trials=trials,
                                                  eval_space=True,
                                                  # <-- this is the line that puts real values into 'best_run'
                                                  return_space=True
@@ -100,8 +102,12 @@ def main():
     print(best_run)
     best_model.save_weights(os.path.join(TrainingConfig.PATHS['MODELS'], running_time, 'best_of_all.h5'))
     print_info("Finished")
-    real_param_values = eval_hyperopt_space(space, best_run)
-    print("Best values: ", real_param_values)
+    for t, trial in enumerate(trials):
+        vals = trial.get('misc').get('vals')
+        print("Trial %s vals: %s" % (t, vals))
+        print(eval_hyperopt_space(space, vals))
+    # real_param_values = eval_hyperopt_space(space, best_run)
+    # print("Best values: ", real_param_values)
 
 
 if __name__ == '__main__':
