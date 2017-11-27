@@ -121,7 +121,7 @@ class DataGenerator(object):
                     new_h, new_w, _ = im.shape
                     if phase == TrainingConfig.TRAINING_PHASE:
                         im = self.__random_preprocessing(im)
-                    im = self.prepare_image(im)
+                    im = DataGenerator.prepare_image(im)
                     images.append(im)
                     classes.append(DataConfig.get_one_hot(image_class))
                     if len(images) == self.batch_size:
@@ -133,7 +133,8 @@ class DataGenerator(object):
                     traceback.print_exc()
                     break
 
-    def prepare_image(self, img, cells_per_block=(3, 3)):
+    @staticmethod
+    def prepare_image(img, cells_per_block=(3, 3)):
         img = cv2.resize(img, (Config.IMAGE_SIZE, Config.IMAGE_SIZE))
         img = color.rgb2gray(img)
         features = hog(img, 8, pixels_per_cell=(8, 8), cells_per_block=cells_per_block, visualise=False)

@@ -1,15 +1,18 @@
 from ..common.config import TrainingConfig, DataConfig, Config
 from keras.models import load_model
-from ..data_processing.data_generator import prepare_image
+from ..data_processing.data_generator import DataGenerator
 from sphinx.versioning import levenshtein_distance
 
 import tqdm
 import os
 import cv2
+import argparse
 import numpy as np
 
 
-def get_all_models():
+def get_all_models_or_from_path(folder_path):
+    if folder_path != '':
+        return [(folder_path, os.path.join(folder_path, 'last_weights.h5'))]
     weights = []
     for folder in os.listdir(TrainingConfig.PATHS['MODELS']):
         folder_path = os.path.join(TrainingConfig.PATHS['MODELS'], folder)
@@ -45,10 +48,10 @@ def process_data(data, input_shape):
                 continue
             if len(input_shape) == 2 and input_shape[-1] == 2592:
                 img = cv2.imread(img_file)
-                img = prepare_image(img)
+                img = DataGenerator.prepare_image(img)
             elif len(input_shape) == 2 and input_shape[-1] == 512:
                 img = cv2.imread(img_file)
-                img = prepare_image(img, cells_per_block=(1, 1))
+                img = DataGenerator.prepare_image(img, cells_per_block=(1, 1))
             elif len(input_shape) == 4:
                 img = cv2.imread(img_file).astype(np.float32) / 255.
                 img = cv2.resize(img, (Config.IMAGE_SIZE, Config.IMAGE_SIZE))
@@ -80,38 +83,49 @@ def test_one_model(model_path, use_real_frames=False):
         letters = ''
         for pr in prediction:
             letters += DataConfig.get_letter(pr)[0]
-        results.append(levenshtein_distance(letters, ''.join(batch_y)))
+        results.append(levenshtein_distance(letters, ''.join(batch_y)) / len(''.join(batch_y)))
     return results
 
 
-def test_ideal():
+def test_ideal(path=''):
     results = ['model_name & mean_levensthein \\\\']
-    for folder, model_path in tqdm.tqdm(get_all_models()):
+    for folder, model_path in tqdm.tqdm(get_all_models_or_from_path(path)):
         try:
             lev_dist = np.mean(test_one_model(model_path, False))
             results.append('{0} & {1:.4f} \\\\'.format(folder, lev_dist))
         except Exception as e:
             print('Exception for: {} in {} '.format(model_path, folder))
             print(e)
-    with open(os.path.join(TrainingConfig.PATHS['MODELS'], 'result_ideal_test.txt'), 'w') as f:
-        f.write('\n'.join(results))
+    if path != '':
+        with open(os.path.join(path, 'results_ideal_test.txt'), 'w') as f:
+            f.write('\n'.join(results))
+    else:
+        with open(os.path.join(TrainingConfig.PATHS['MODELS'], 'result_ideal_test.txt'), 'w') as f:
+            f.write('\n'.join(results))
     return results
 
 
-def test_real():
+def test_real(path=''):
     results = ['model_name & mean_levensthein \\\\']
-    for folder, model_path in tqdm.tqdm(get_all_models()):
+    for folder, model_path in tqdm.tqdm(get_all_models_or_from_path(path)):
         try:
             lev_dist = np.mean(test_one_model(model_path, True))
             results.append('{0} & {1:.4f} \\\\'.format(folder, lev_dist))
         except Exception as e:
             print('Exception for: {} in {} '.format(model_path, folder))
             print(e)
-    with open(os.path.join(TrainingConfig.PATHS['MODELS'], 'result_real_test.txt'), 'w') as f:
-        f.write('\n'.join(results))
+    if path != '':
+        with open(os.path.join(path, 'results_real_test.txt'), 'w') as f:
+            f.write('\n'.join(results))
+    else:
+        with open(os.path.join(TrainingConfig.PATHS['MODELS'], 'result_real_test.txt'), 'w') as f:
+            f.write('\n'.join(results))
     return results
 
 
 if __name__ == '__main__':
-    test_ideal()
-    test_real()
+    argparser = argparse.ArgumentParser(description='Script for testing on frames from system')
+    argparser.add_argument('-m', '--model_path', default='', help='Path to model folder containing weights.h5')
+    args = argparser.parse_args()
+    test_ideal(args.model_path)
+    test_real(args.model_path)
