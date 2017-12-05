@@ -35,13 +35,20 @@ def help():
 
 
 def elastic_transform(image, alpha=0.15, sigma=0.08, alpha_affine=0.08, random_state=None):
-    """Elastic deformation of images as described in [Simard2003]_ (with modifications).
+    """
+    Elastic deformation of images as described in [Simard2003]_ (with modifications).
     .. [Simard2003] Simard, Steinkraus and Platt, "Best Practices for
          Convolutional Neural Networks applied to Visual Document Analysis", in
          Proc. of the International Conference on Document Analysis and
          Recognition, 2003.
 
      Based on https://gist.github.com/erniejunior/601cdf56d2b424757de5
+    :param image: Image to transform in range [0, 1] or [0, 255].
+    :param alpha: Size of random elastic transform (distance of moving pixels).
+    :param sigma: Standard deviation for gaussian blur (smoothing coefficient).
+    :param alpha_affine: Coefficient for translating image.
+    :param random_state: State of random number generator.
+    :return: Warped image in the same range as input.
     """
     if random_state is None:
         random_state = np.random.RandomState(None)
@@ -115,23 +122,20 @@ def hue_change(x):
 
 def random_shift(x, wrg, hrg, row_axis=1, col_axis=2, channel_axis=0,
                  fill_mode='nearest', cval=0.):
-    """Performs a random spatial shift of a Numpy image tensor.
-
-    # Arguments
-        x: Input tensor. Must be 3D.
-        wrg: Width shift range, as a float fraction of the width.
-        hrg: Height shift range, as a float fraction of the height.
-        row_axis: Index of axis for rows in the input tensor.
-        col_axis: Index of axis for columns in the input tensor.
-        channel_axis: Index of axis for channels in the input tensor.
-        fill_mode: Points outside the boundaries of the input
+    """
+    Performs a random spatial shift of a Numpy image tensor.
+    :param x: Input tensor. Must be 3D.
+    :param wrg: Width shift range, as a float fraction of the width.
+    :param hrg: Height shift range, as a float fraction of the height.
+    :param row_axis: Index of axis for rows in the input tensor.
+    :param col_axis: Index of axis for columns in the input tensor.
+    :param channel_axis: Index of axis for channels in the input tensor.
+    :param fill_mode: Points outside the boundaries of the input
             are filled according to the given mode
             (one of `{'constant', 'nearest', 'reflect', 'wrap'}`).
-        cval: Value used for points outside the boundaries
+    :param cval: Value used for points outside the boundaries
             of the input if `mode='constant'`.
-
-    # Returns
-        Shifted Numpy image tensor.
+    :return: Randomly shifted Numpy tensor
     """
     h, w = x.shape[row_axis], x.shape[col_axis]
     tx = np.random.uniform(-hrg, hrg) * h
@@ -159,25 +163,20 @@ def apply_transform(x, transform_matrix, channel_axis=0, fill_mode='nearest', cv
 
 def random_zoom(x, zoom_range, row_axis=1, col_axis=2, channel_axis=0,
                 fill_mode='nearest', cval=0.):
-    """Performs a random spatial zoom of a Numpy image tensor.
-
-    # Arguments
-        x: Input tensor. Must be 3D.
-        zoom_range: Tuple of floats; zoom range for width and height.
-        row_axis: Index of axis for rows in the input tensor.
-        col_axis: Index of axis for columns in the input tensor.
-        channel_axis: Index of axis for channels in the input tensor.
-        fill_mode: Points outside the boundaries of the input
+    """
+    Performs a random spatial zoom of a Numpy image tensor.
+    :param x: Input tensor. Must be 3D.
+    :param zoom_range: Tuple of floats; zoom range for width and height.
+    :param row_axis: Index of axis for rows in the input tensor.
+    :param col_axis: Index of axis for columns in the input tensor.
+    :param channel_axis: Index of axis for channels in the input tensor.
+    :param fill_mode: Points outside the boundaries of the input
             are filled according to the given mode
             (one of `{'constant', 'nearest', 'reflect', 'wrap'}`).
-        cval: Value used for points outside the boundaries
+    :param cval: Value used for points outside the boundaries
             of the input if `mode='constant'`.
-
-    # Returns
-        Zoomed Numpy image tensor.
-
-    # Raises
-        ValueError: if `zoom_range` isn't a tuple.
+    :return: Zoomed Numpy image tensor.
+    :raise: ValueError: if `zoom_range` isn't a tuple.
     """
     if len(zoom_range) != 2:
         raise ValueError('zoom_range should be a tuple or list of two floats. '
