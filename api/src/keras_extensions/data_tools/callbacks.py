@@ -11,9 +11,6 @@ import keras.callbacks as callbacks
 
 
 class PlotCallback(Callback):
-    """
-
-    """
 
     def __init__(self, folder_path, plot_name):
         super(PlotCallback, self).__init__()

@@ -3,9 +3,13 @@ import string
 from api.src.keras_extensions.metrics import f1
 
 from keras.metrics import top_k_categorical_accuracy
+from sklearn.preprocessing import LabelEncoder
 
 
 class Config(object):
+    """
+    Holds all constants necessary for keras implementations.
+    """
     import keras.backend as K
     IMAGE_SIZE = 64
     EPSILON = 1e-6
@@ -25,6 +29,10 @@ class Config(object):
 
     @staticmethod
     def get_config():
+        """
+        Creates dict with constants used during experiment.
+        :return: Dict with all necessary constants for learning analysis
+        """
         return {
             'image_size': Config.IMAGE_SIZE,
             'epsilon': Config.EPSILON,
@@ -37,6 +45,10 @@ class Config(object):
 
 
 class TrainingConfig(object):
+    """
+    Holds all constants necessary for learning algorithm,
+    like currently used optimizers, epochs etc.
+    """
     from keras.optimizers import SGD, Adam
 
     NB_EPOCHS = 100
@@ -55,6 +67,11 @@ class TrainingConfig(object):
 
     @staticmethod
     def schedule(epoch_idx):
+        """
+        Scheduling method for LearningRateScheduler during learning
+        :param epoch_idx: Index
+        :return:
+        """
         if (epoch_idx + 1) < TrainingConfig.lr_schedule[0]:
             return TrainingConfig.INITIAL_LEARNING_RATE
         elif (epoch_idx + 1) < TrainingConfig.lr_schedule[1]:
@@ -91,7 +108,6 @@ class TrainingConfig(object):
         }
 
 
-from sklearn.preprocessing import LabelEncoder
 class DataConfig(object):
     PATHS = {
         'RAW_DATA': os.path.join('data', 'raw'),

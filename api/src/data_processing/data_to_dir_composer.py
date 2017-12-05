@@ -107,12 +107,12 @@ def parse_massey_file_name(file_name):
 
 def main():
     parse_functions = [
-        # parse_empslocal_dataset,
-        # parse_massey_data,
+        parse_empslocal_dataset,
+        parse_massey_data,
         parse_handspeak_data
     ]
     create_letter_dirs()
-    # clear_dirs()
+    clear_dirs()
     for data_function in parse_functions:
         data_function()
 

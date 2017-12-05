@@ -27,8 +27,6 @@ def train(num_epochs, batch_size, input_size, num_workers):
     callbacks = [
         ModelCheckpoint(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'weights.h5'), save_best_only=True, monitor=TrainingConfig.callbacks_monitor),
         CSVLogger(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'history.csv')),
-        # TensorBoard(log_dir=os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'tensorboard')),
-        # LearningRateScheduler(TrainingConfig.schedule),
         EarlyStopping(patience=12)
     ]if not Config.NO_SAVE else []
 

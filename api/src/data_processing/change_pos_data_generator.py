@@ -22,15 +22,10 @@ def get_class_from_path(im_fn):
 
 
 def random_preprocessing(img):
-    # if random.random() < 0.5:
-    #     img = flip_axis(img, 1)
     img = random_rotation(img, 10, 0, 1, 2)
-
     img = random_zoom(img, (0.75, 1.3), 0, 1, 2)
     img = random_shift(img, 0.25, 0.25, 0, 1, 2)
-    # img = gaussian_filter(img, sigma=[random.uniform(0.0, 0.7), random.uniform(0.0, 0.7),random.uniform(0.0, 0.2)])
     img = poisson_noise(img)
-    # img = hue_change(img)
     if random.random() < 0.5:
         img = brightness_change(img)
     else:

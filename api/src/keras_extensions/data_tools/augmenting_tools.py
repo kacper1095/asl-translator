@@ -33,6 +33,7 @@ def help():
            "\ngamma_augmentation" \
 
 
+
 def elastic_transform(image, alpha=0.15, sigma=0.08, alpha_affine=0.08, random_state=None):
     """Elastic deformation of images as described in [Simard2003]_ (with modifications).
     .. [Simard2003] Simard, Steinkraus and Platt, "Best Practices for

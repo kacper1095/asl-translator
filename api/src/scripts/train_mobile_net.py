@@ -17,14 +17,12 @@ RUNNING_TIME = datetime.datetime.now().strftime("%H_%M_%d_%m_%y")
 def train(num_epochs, batch_size, input_size, num_workers):
     if not Config.NO_SAVE:
         ensure_dir(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME))
-    # model = create_model(get_spatial_transformer())
     model = create_model()
     model.summary()
 
     callbacks = [
         ModelCheckpoint(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'weights.h5'), save_best_only=True, monitor=TrainingConfig.callbacks_monitor),
         CSVLogger(os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'history.csv')),
-        # TensorBoard(log_dir=os.path.join(TrainingConfig.PATHS['MODELS'], RUNNING_TIME, 'tensorboard')),
         LearningRateScheduler(TrainingConfig.schedule),
         EarlyStopping(patience=12)
     ] if not Config.NO_SAVE else []

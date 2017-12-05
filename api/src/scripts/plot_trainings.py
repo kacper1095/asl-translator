@@ -53,6 +53,7 @@ def get_description_string(model):
     description = output_buf.getvalue()
     return description
 
+
 def list_training_folders():
     return glob.glob(os.path.join(TrainingConfig.PATHS['MODELS'], '**', '*.csv'))
 

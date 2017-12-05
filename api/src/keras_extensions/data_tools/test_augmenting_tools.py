@@ -61,5 +61,6 @@ def test_all(data):
         out_img = get_augmenting_funcions([0, 1])(img/255.)
         cv2.imwrite(os.path.join(OUTPUT_PATH, str(i) + '_all.png'), out_img[0] * 255.)
 
+
 if __name__ == '__main__':
     main()
