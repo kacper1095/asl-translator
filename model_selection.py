@@ -70,7 +70,6 @@ def train(data_generator_train, data_generator_valid):
         with open(os.path.join(TrainingConfig.PATHS['MODELS'], running_time, 'model.txt'), 'w') as f:
             f.write(get_description_string(model))
 
-    # optimizer = TrainingConfig.optimizer
     model.compile({{choice([Adam(), Adam(0.02), SGD(0.02, momentum=0.9, nesterov=True)])}}, TrainingConfig.loss, metrics=TrainingConfig.metrics)
 
     model.fit_generator(data_generator_train, samples_per_epoch=data_generator_train.samples_per_epoch,
@@ -106,8 +105,6 @@ def main():
         vals = trial.get('misc').get('vals')
         print("Trial %s vals: %s" % (t, vals))
         print(eval_hyperopt_space(space, vals))
-    # real_param_values = eval_hyperopt_space(space, best_run)
-    # print("Best values: ", real_param_values)
 
 
 if __name__ == '__main__':
