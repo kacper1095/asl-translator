@@ -1,153 +1,176 @@
-from keras.layers import Input, Convolution2D, BatchNormalization, Activation, Dropout, merge, AveragePooling2D, \
-    Flatten, Dense
+"""
+Code from my Wide Residual Network repository : https://github.com/titu1994/Wide-Residual-Networks
+"""
 from keras.models import Model
-from keras.regularizers import l2
+from keras.layers import Input, merge, Activation, Dropout, Flatten, Dense, SpatialDropout2D
+from keras.layers.convolutional import Convolution2D, MaxPooling2D, AveragePooling2D
+from keras.layers.pooling import GlobalAveragePooling2D
+from keras.layers.normalization import BatchNormalization
+from keras import backend as K
 
-from api.src.models.localization_network import create_localization_net, get_spatial_transformer
 from api.src.common.config import Config, DataConfig
 
-import logging
 
-logging.basicConfig(level=logging.DEBUG)
+def initial_conv(input):
+    channel_axis = 1 if K.image_dim_ordering() == "th" else -1
+    x = Convolution2D(16, 3, 3, subsample=(2, 2), border_mode='same')(input)
+    x = BatchNormalization(axis=channel_axis)(x)
+    x = Activation(Config.ACTIVATION)(x)
 
-depth = 16  # table 5 on page 8 indicates best value (4.17) CIFAR-10
-k = 4  # 'widen_factor'; table 5 on page 8 indicates best value (4.17) CIFAR-10
-dropout_probability = 0.25  # table 6 on page 10 indicates best value (4.17) CIFAR-10
-
-weight_decay = 0.0005  # page 10: "Used in all experiments"
-
-nb_epochs = 200
-lr_schedule = [60, 120, 160]  # epoch_step
-
-weight_init = "he_normal"  # follows the 'MSRinit(model)' function in utils.lua
+    return x
 
 
-def schedule(epoch_idx):
-    if (epoch_idx + 1) < lr_schedule[0]:
-        return 0.1
-    elif (epoch_idx + 1) < lr_schedule[1]:
-        return 0.02  # lr_decay_ratio = 0.2
-    elif (epoch_idx + 1) < lr_schedule[2]:
-        return 0.004
-    return 0.0008
+def conv1_block(input, k=1, dropout=0.0):
+    init = input
 
+    channel_axis = 1 if K.image_dim_ordering() == "th" else -1
 
-use_bias = False  # following functions 'FCkernel_initializer(model)' and 'DisableBias(model)' in utils.lua
-weight_kernel_initializer = "he_normal"  # follows the 'MSRkernel_initializer(model)' function in utils.lua
-
-
-# Wide residual network http://arxiv.org/abs/1605.07146
-def _wide_basic(n_input_plane, n_output_plane, stride):
-    def f(net):
-        # format of conv_params:
-        #               [ [nb_col="kernel width", nb_row="kernel height",
-        #               strides="(stride_vertical,stride_horizontal)",
-        #               padding="same" or "valid"] ]
-        # B(3,3): orignal <<basic>> block
-        conv_params = [[3, 3, stride, "same"],
-                       [3, 3, (1, 1), "same"]]
-
-        n_bottleneck_plane = n_output_plane
-
-        # Residual block
-        for i, v in enumerate(conv_params):
-            if i == 0:
-                if n_input_plane != n_output_plane:
-                    net = BatchNormalization(axis=Config.CHANNEL_AXIS)(net)
-                    net = Activation("relu")(net)
-                    convs = net
-                else:
-                    convs = BatchNormalization(axis=Config.CHANNEL_AXIS)(net)
-                    convs = Activation("relu")(convs)
-                convs = Convolution2D(n_bottleneck_plane, nb_col=v[0], nb_row=v[1],
-                                      subsample=v[2],
-                                      border_mode=v[3],
-                                      init=weight_init,
-                                      bias=use_bias)(convs)
-            else:
-                convs = BatchNormalization(axis=Config.CHANNEL_AXIS)(convs)
-                convs = Activation("relu")(convs)
-                if dropout_probability > 0:
-                    convs = Dropout(dropout_probability)(convs)
-                convs = Convolution2D(n_bottleneck_plane, nb_col=v[0], nb_row=v[1],
-                                      subsample=v[2],
-                                      border_mode=v[3],
-                                      init=weight_init,
-                                      bias=use_bias)(convs)
-
-        # Shortcut Conntection: identity function or 1x1 convolutional
-        #  (depends on difference between input & output shape - this
-        #   corresponds to whether we are using the first block in each
-        #   group; see _layer() ).
-        if n_input_plane != n_output_plane:
-            shortcut = Convolution2D(n_output_plane, nb_col=1, nb_row=1,
-                                     subsample=stride,
-                                     border_mode="same",
-                                     init=weight_init,
-                                     bias=use_bias)(net)
-        else:
-            shortcut = net
-
-        return merge([convs, shortcut], mode="sum")
-
-    return f
-
-
-# "Stacking Residual Units on the same stage"
-def _layer(block, n_input_plane, n_output_plane, count, stride):
-    def f(net):
-        net = block(n_input_plane, n_output_plane, stride)(net)
-        for i in range(2, int(count + 1)):
-            net = block(n_output_plane, n_output_plane, stride=(1, 1))(net)
-        return net
-
-    return f
-
-
-def create_model(spatial_network=None):
-    logging.debug("Creating model...")
-
-    assert ((depth - 4) % 6 == 0)
-    n = (depth - 4) / 6
-
-    inputs = Input(shape=Config.INPUT_SHAPE)
-
-    n_stages = [16, 16 * k, 32 * k, 64 * k]
-    if spatial_network is not None:
-        conv1 = Convolution2D(nb_filter=n_stages[0], nb_row=3, nb_col=3,
-                              subsample=(1, 1),
-                              border_mode="same",
-                              init=weight_init,
-                              bias=use_bias)(
-            spatial_network(inputs))  # "One conv at the beginning (spatial size: 32x32)"
+    # Check if input number of filters is same as 16 * k,
+    # else create convolution2d for this input
+    if K.image_dim_ordering() == "th":
+        if init._keras_shape[1] != 16 * k:
+            init = Convolution2D(16 * k, 1, 1,
+                                 activation='linear',
+                                 border_mode='same')(init)
     else:
-        conv1 = Convolution2D(nb_filter=n_stages[0], nb_row=3, nb_col=3,
-                              subsample=(1, 1),
-                              border_mode="same",
-                              init=weight_init,
-                              bias=use_bias)(inputs)  # "One conv at the beginning (spatial size: 32x32)"
+        if init._keras_shape[-1] != 16 * k:
+            init = Convolution2D(16 * k, 1, 1,
+                                 activation='linear',
+                                 border_mode='same')(init)
 
-    # Add wide residual blocks
-    block_fn = _wide_basic
-    conv2 = _layer(block_fn, n_input_plane=n_stages[0], n_output_plane=n_stages[1], count=n, stride=(1, 1))(
-        conv1)  # "Stage 1 (spatial size: 32x32)"
-    conv3 = _layer(block_fn, n_input_plane=n_stages[1], n_output_plane=n_stages[2], count=n, stride=(2, 2))(
-        conv2)  # "Stage 2 (spatial size: 16x16)"
-    conv4 = _layer(block_fn, n_input_plane=n_stages[2], n_output_plane=n_stages[3], count=n, stride=(2, 2))(
-        conv3)  # "Stage 3 (spatial size: 8x8)"
+    x = Convolution2D(16 * k, 3, 3,
+                      border_mode='same')(input)
+    x = BatchNormalization(axis=channel_axis)(x)
+    x = Activation(Config.ACTIVATION)(x)
 
-    batch_norm = BatchNormalization(axis=Config.CHANNEL_AXIS)(conv4)
-    relu = Activation("relu")(batch_norm)
+    if dropout > 0.0: x = SpatialDropout2D(dropout)(x)
+    print(dropout)
 
-    # Classifier block
-    pool = AveragePooling2D(pool_size=(8, 8), strides=(8, 8), border_mode="same")(relu)
-    flatten = Flatten()(pool)
-    predictions = Dense(output_dim=DataConfig.get_number_of_classes(), init=weight_kernel_initializer,
-                        bias=use_bias, activation="softmax")(flatten)
+    x = Convolution2D(16 * k, 3, 3, border_mode='same')(x)
+    x = BatchNormalization(axis=channel_axis)(x)
+    x = Activation(Config.ACTIVATION)(x)
 
-    model = Model(input=inputs, output=predictions)
+    m = merge([init, x], mode='sum')
+    return m
+
+def conv2_block(input, k=1, dropout=0.0):
+    init = input
+
+    channel_axis = 1 if K.image_dim_ordering() == "th" else -1
+
+    # Check if input number of filters is same as 32 * k, else create convolution2d for this input
+    if K.image_dim_ordering() == "th":
+        if init._keras_shape[1] != 32 * k:
+            init = Convolution2D(32 * k, 1, 1, activation='linear', border_mode='same')(init)
+    else:
+        if init._keras_shape[-1] != 32 * k:
+            init = Convolution2D(32 * k, 1, 1, activation='linear', border_mode='same')(init)
+
+    x = Convolution2D(32 * k, 3, 3, border_mode='same')(input)
+    x = BatchNormalization(axis=channel_axis)(x)
+    x = Activation(Config.ACTIVATION)(x)
+
+    if dropout > 0.0: x = SpatialDropout2D(dropout)(x)
+    print(dropout)
+
+    x = Convolution2D(32 * k, 3, 3, border_mode='same')(x)
+    x = BatchNormalization(axis=channel_axis)(x)
+    x = Activation(Config.ACTIVATION)(x)
+
+    m = merge([init, x], mode='sum')
+    return m
+
+def conv3_block(input, k=1, dropout=0.0):
+    init = input
+
+    channel_axis = 1 if K.image_dim_ordering() == "th" else -1
+
+    # Check if input number of filters is same as 64 * k, else create convolution2d for this input
+    if K.image_dim_ordering() == "th":
+        if init._keras_shape[1] != 64 * k:
+            init = Convolution2D(64 * k, 1, 1, activation='linear', border_mode='same')(init)
+    else:
+        if init._keras_shape[-1] != 64 * k:
+            init = Convolution2D(64 * k, 1, 1, activation='linear', border_mode='same')(init)
+
+    x = Convolution2D(64 * k, 3, 3, border_mode='same')(input)
+    x = BatchNormalization(axis=channel_axis)(x)
+    x = Activation(Config.ACTIVATION)(x)
+
+    if dropout > 0.0: x = SpatialDropout2D(dropout)(x)
+    print(dropout)
+
+    x = Convolution2D(64 * k, 3, 3, border_mode='same')(x)
+    x = BatchNormalization(axis=channel_axis)(x)
+    x = Activation(Config.ACTIVATION)(x)
+
+    m = merge([init, x], mode='sum')
+    return m
+
+
+def create_wide_residual_network(input_dim, N=2, k=1, dropout=0.0, verbose=1, path_weights=None, layer_to_stop_freezing='merge_4'):
+    """
+    Creates a Wide Residual Network with specified parameters
+    :param input: Input Keras object
+    :param nb_classes: Number of output classes
+    :param N: Depth of the network. Compute N = (n - 4) / 6.
+              Example : For a depth of 16, n = 16, N = (16 - 4) / 6 = 2r
+              Example2: For a depth of 28, n = 28, N = (28 - 4) / 6 = 4
+              Example3: For a depth of 40, n = 40, N = (40 - 4) / 6 = 6
+    :param k: Width of the network.
+    :param dropout: Adds dropout if value is greater than 0.0
+    :param verbose: Debug info to describe created WRN
+    :return:
+    """
+    ip = Input(shape=input_dim)
+
+    x = initial_conv(ip)
+    nb_conv = 4
+
+    for i in range(N):
+        x = conv1_block(x, k, dropout)
+        nb_conv += 2
+
+    x = MaxPooling2D((2,2))(x)
+
+    for i in range(N):
+        x = conv2_block(x, k, dropout)
+        nb_conv += 2
+
+    x = MaxPooling2D((2,2))(x)
+
+    for i in range(N):
+        x = conv3_block(x, k, dropout)
+        nb_conv += 2
+
+    x = AveragePooling2D((8, 8))(x)
+    x = Flatten()(x)
+
+    x = Dense(DataConfig.get_number_of_classes(), activation='softmax', name='classifier')(x)
+
+    model = Model(ip, x)
+    if path_weights is not None:
+        model.load_weights(path_weights, by_name=True)
+        for layer in model.layers:
+            if layer.name == layer_to_stop_freezing:
+                break
+            layer.trainable = False
+
+    if verbose: print("Wide Residual Network-%d-%d created." % (nb_conv, k))
     return model
 
 
-if __name__ == '__main__':
-    create_model(get_spatial_transformer()).summary()
+if __name__ == "__main__":
+    from keras.layers import Input
+    from keras.models import Model
+
+    init = (3, 64, 64)
+
+    model = create_wide_residual_network(init, N=2, k=8, dropout=0.25, path_weights=DataConfig.PATHS['PRETRAINED_MODEL_FOLDER'] + '/WRN-16-8 Weights.h5',
+                                         layer_to_stop_freezing='merge_2')
+
+
+    model.summary()
+    # with open('architecture.json', 'w') as f:
+    #     f.write(model.to_json())
+    # plot(model, "WRN-28-10.png", show_shapes=True, show_layer_names=True)

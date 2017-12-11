@@ -9,7 +9,7 @@ from ..common.config import TrainingConfig, DataConfig, Config
 from ..common.utils import print_info, ensure_dir
 
 from api.src.keras_extensions.data_tools.callbacks import SnapshotCallbackBuilder
-from api.src.models import wrn_by_titu as WRN
+from api.src.models import wide_resnet as WRN
 
 RUNNING_TIME = datetime.datetime.now().strftime("%H_%M_%d_%m_%y")
 

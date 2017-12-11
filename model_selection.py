@@ -8,7 +8,7 @@ import api.src.common.initial_environment_config
 
 from sklearn.preprocessing import LabelEncoder
 from sklearn.base import BaseEstimator, TransformerMixin
-from api.src.models.wrn_by_titu import create_wide_residual_network
+from api.src.models.wide_resnet import create_wide_residual_network
 from api.src.data_processing.data_generator import DataGenerator
 from api.src.common.config import TrainingConfig, DataConfig, Config
 from api.src.common.utils import print_info, ensure_dir
