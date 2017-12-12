@@ -237,3 +237,4 @@ ENV/
 
 data/*
 api/notes/*
+api/models/*
