@@ -1,5 +1,6 @@
 from keras.models import Model
-from keras.layers import Convolution2D, BatchNormalization, MaxPooling2D, Lambda, Activation, Input, Dropout, Flatten, Dense
+from keras.layers import Convolution2D, BatchNormalization, MaxPooling2D, Lambda, Activation, Input, Dropout, Flatten, \
+    Dense
 from api.src.common.config import Config, DataConfig
 
 import keras.backend as K
@@ -17,7 +18,7 @@ def bn_convo(x, filters, kernel_size, use_dropout=False):
 
 def base_model():
     inputs = Input(Config.INPUT_SHAPE)
-    filters = [16, 32, 48, 48]
+    filters = [32, 64, 128, 128]
     repetitions = [2, 2, 3, 3]
 
     x = Convolution2D(16, 5, 5, init=Config.WEIGHT_INIT,
@@ -33,7 +34,6 @@ def base_model():
     x = Flatten()(x)
     model = Model(inputs, x, '3_convo')
     return model
-
 
 
 def euclidean_distance(vects):

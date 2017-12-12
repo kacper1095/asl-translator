@@ -36,9 +36,9 @@ def train(num_epochs, batch_size, input_size, num_workers):
 
     optimizer = TrainingConfig.optimizer
     data_generator_train = DataGenerator(DataConfig.PATHS['TRAINING_PROCESSED_DATA'], batch_size, input_size,
-                                         valid=False, use_hog=True, without_preprocessing=True)
+                                         valid=False, use_hog=True)
     data_generator_valid = DataGenerator(DataConfig.PATHS['VALID_PROCESSED_DATA'], batch_size, input_size, valid=True,
-                                         use_hog=True, without_preprocessing=True)
+                                         use_hog=True)
     model.compile(TrainingConfig.available_optimizers[optimizer], 'categorical_crossentropy', metrics=TrainingConfig.metrics)
 
     model.fit_generator(data_generator_train,

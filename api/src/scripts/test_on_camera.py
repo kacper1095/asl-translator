@@ -14,7 +14,7 @@ from ..models.three_convo_change_detection import create_model
 all_letters = 'abcdefghiklmnopqrstuvwxy'
 
 
-def capture_camera(model, time_interval, model_position_change=None):
+def capture_camera(model, model_position_change=None):
     pygame.init()
     camera.init()
     cam = camera.Camera('/dev/video0', (640, 480))
@@ -68,6 +68,7 @@ def classify_letter(model, cropped_window):
     letter_class = int(np.argmax(prediction))
     return all_letters[letter_class]
 
+
 def euclidean_distance(vects):
     x, y = vects
     return K.sqrt(K.maximum(K.sum(K.square(x - y), axis=1, keepdims=True), K.epsilon()))
@@ -77,11 +78,12 @@ def eucl_dist_output_shape(shapes):
     shape1, shape2 = shapes
     return shape1[0], 1
 
+
 def parse_args():
     argparser = argparse.ArgumentParser('Script for testing model on camera')
     argparser.add_argument('model', help='H5 weights of keras model')
-    argparser.add_argument('time', type=int, help='Interval between predictions')
-    argparser.add_argument('--position_change', default='', help='Test changing position')
+    # argparser.add_argument('time', type=int, help='Interval between predictions')
+    argparser.add_argument('position_change', default='', help='Test changing position')
     args = argparser.parse_args()
     return args
 
@@ -94,7 +96,7 @@ def main():
         model_position_change = create_model()
         model_position_change.load_weights(args.position_change)
     # model = args.model
-    capture_camera(model, args.time, model_position_change)
+    capture_camera(model, model_position_change)
 
 
 if __name__ == '__main__':
