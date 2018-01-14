@@ -144,6 +144,10 @@ class DataConfig(object):
         return DataConfig.CLASS_ENCODER.inverse_transform([cls])
 
     @staticmethod
+    def get_letters(clss):
+        return DataConfig.CLASS_ENCODER.inverse_transform(clss)
+
+    @staticmethod
     def use_full_alphabet():
         DataConfig.__reinitialize_with_signs('abcdefghijklmnopqrstuwxyz')
 

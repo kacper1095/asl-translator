@@ -65,38 +65,38 @@ class DataGenerator(object):
             image_list.shape[0], self.dir_path))
         index = np.arange(0, image_list.shape[0])
 
-        while True:
-            images = []
-            classes = []
-            np.random.shuffle(index)
-            for i in index:
-                try:
-                    im_fn = image_list[i]
-                    im = cv2.imread(im_fn)
-                    # print im_fn
-                    h, w, _ = im.shape
-                    image_class = self.get_class_from_path(im_fn)
+        # while True:
+        images = []
+        classes = []
+        np.random.shuffle(index)
+        for i in index:
+            try:
+                im_fn = image_list[i]
+                im = cv2.imread(im_fn)
+                # print im_fn
+                h, w, _ = im.shape
+                image_class = self.get_class_from_path(im_fn)
 
-                    resize_h = self.input_size
-                    resize_w = self.input_size
-                    im = cv2.resize(im, dsize=(resize_w, resize_h))
-                    new_h, new_w, _ = im.shape
-                    im = im[:, :, ::-1].astype(np.float32) / 255.
-                    if phase == TrainingConfig.TRAINING_PHASE:
-                        im = self.__random_preprocessing(im)
-                    if K.backend() == 'tensorflow':
-                        images.append(im)
-                    else:
-                        images.append(im.transpose((2, 0, 1)))
-                    classes.append(DataConfig.get_one_hot(image_class))
-                    if len(images) == self.batch_size:
-                        yield np.array(images), np.array(classes)
-                        images = []
-                        classes = []
-                except Exception as e:
-                    import traceback
-                    traceback.print_exc()
-                    break
+                resize_h = self.input_size
+                resize_w = self.input_size
+                im = cv2.resize(im, dsize=(resize_w, resize_h))
+                new_h, new_w, _ = im.shape
+                im = im[:, :, ::-1].astype(np.float32) / 255.
+                if phase == TrainingConfig.TRAINING_PHASE:
+                    im = self.__random_preprocessing(im)
+                if K.backend() == 'tensorflow':
+                    images.append(im)
+                else:
+                    images.append(im.transpose((2, 0, 1)))
+                classes.append(DataConfig.get_one_hot(image_class))
+                if len(images) == self.batch_size:
+                    yield np.array(images), np.array(classes)
+                    images = []
+                    classes = []
+            except Exception as e:
+                import traceback
+                traceback.print_exc()
+                break
 
     def generator_with_feature_extraction(self, phase=1):
         image_list = np.array(self.get_images())
